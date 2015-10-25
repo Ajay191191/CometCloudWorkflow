@@ -1,4 +1,4 @@
-package com.example.application;
+package com.workflow.application;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import tassl.application.cometcloud.FileProperties;
 import tassl.application.cometcloud.GenerateTasksAbstract;
 import tassl.application.cometcloud.GenerateTasksObject;
 
-public class MapTask extends GenerateTasksAbstract {
+public class GeneratorTask extends GenerateTasksAbstract {
 
 	
 	@Override
