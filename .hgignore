@@ -1,0 +1,4 @@
+syntax: glob
+bin/*
+.settings/org.eclipse.ltk.core.refactoring.prefs
+.settings/org.eclipse.jdt.core.prefs
