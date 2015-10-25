@@ -28,7 +28,7 @@ public class MapTask implements Task{
     	}
     	
     	double random = Math.random() * 10000;
-		String outputFile = random + helper.getTasktuple().getTaskid()+"_"+System.getProperty("Name")+".sam";
+		String outputFile = random + "_"+System.getProperty("Name")+".sam";
     	
     	command.add(">");
     	command.add(workingdir + File.separator + outputFile);
