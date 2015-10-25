@@ -21,6 +21,7 @@ public class WorkerTask extends WorkflowMeteorGenericWorker {
 	    List data = (List) dataobj;
 
 	    InputHelper inputHelper = new InputHelper((String)data.get(0), (FileProperties)data.get(1), (List<FileProperties>)data.get(2),tasktuple);
+	    Logger.getLogger(WorkerTask.class.getName()).log(Level.INFO,"" + inputHelper);
 	    
 	    String workingdir=System.getProperty("WorkingDir");
 	    

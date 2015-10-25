@@ -3,7 +3,10 @@ package com.workflow.application.helper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.workflow.application.WorkerTask;
 import com.workflow.application.tasks.MapTask;
 import com.workflow.application.tasks.ReduceTask;
 import com.workflow.application.tasks.Task;
@@ -77,5 +80,10 @@ public class InputHelper{
 	}
 	public void setTasktuple(WorkflowTaskTuple tasktuple) {
 		this.tasktuple = tasktuple;
+	}
+	
+	@Override
+	public String toString() {
+		return "Method: " + this.method + " Input: " + this.inputFiles + " Output: " + this.outputFile + " TaskTuple: " + this.tasktuple;
 	}
 }
