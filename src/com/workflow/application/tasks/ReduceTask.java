@@ -8,10 +8,10 @@ import tassl.application.cometcloud.FileProperties;
 import com.workflow.application.WorkerTask;
 import com.workflow.application.helper.InputHelper;
 
-public class ReduceTask extends WorkerTask implements Task{
+public class ReduceTask implements Task{
 
 	@Override
-	public Object[] performTask(InputHelper helper) {
+	public Object[] performTask(InputHelper helper,WorkerTask task) {
 
 		List outfiles=new ArrayList();
 		for(String location: helper.getInputsHash().keySet()){
@@ -28,7 +28,7 @@ public class ReduceTask extends WorkerTask implements Task{
 			}
 		}
 		
-		List<FileProperties> resultFiles=this.uploadResults(outfiles,System.getProperty("WorkingDir") , helper.getOutputFile());
+		List<FileProperties> resultFiles=task.uploadResults(outfiles,System.getProperty("WorkingDir") , helper.getOutputFile());
 		return new Object[]{"OK",resultFiles};
 	
 	}

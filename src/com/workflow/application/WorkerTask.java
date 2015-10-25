@@ -1,7 +1,5 @@
 package com.workflow.application;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -13,7 +11,6 @@ import tassl.application.cometcloud.WorkflowTaskTuple;
 
 import com.workflow.application.helper.InputHelper;
 import com.workflow.application.tasks.Task;
-import com.workflow.application.util.Util;
 
 public class WorkerTask extends WorkflowMeteorGenericWorker {
 
@@ -36,12 +33,7 @@ public class WorkerTask extends WorkflowMeteorGenericWorker {
 	    }
 	    
 	    Task task = inputHelper.getTask();
-	    return task.performTask(inputHelper);
-	    /*if(inputHelper.getMethod().equals(HelperConstants.MAP)){
-	       return map(tasktuple, outputFP, workingdir, inputsHash);
-	    }else if (method.equals(HelperConstants.REDUCE)){
-	    	return reduce(tasktuple, data, outputFP, workingdir, inputsHash);
-	    }*/
+	    return task.performTask(inputHelper,this);
 	}
 
 	//this function is not yet supported, we would leave it as follows.
@@ -49,4 +41,11 @@ public class WorkerTask extends WorkflowMeteorGenericWorker {
 	public void cancelJob() {
 	    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
+
+	@Override
+	public List<FileProperties> uploadResults(List<String> arg0,String arg1, FileProperties arg2) {
+		return super.uploadResults(arg0, arg1, arg2);
+	}
+	
+	
 }

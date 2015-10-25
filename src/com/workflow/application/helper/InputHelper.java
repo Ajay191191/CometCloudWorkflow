@@ -67,10 +67,8 @@ public class InputHelper{
 	public Task getTask(){
 		if (this.method.equals(HelperConstants.MAP)) {
 			return new MapTask();
-//			return map(tasktuple, this.outputFile, workingdir, inputsHash);
 		} else if (this.method.equals(HelperConstants.REDUCE)) {
 			return new ReduceTask();
-//			return reduce(tasktuple, this.outputFile, workingdir, inputsHash);
 		}
 		return null;
 	}

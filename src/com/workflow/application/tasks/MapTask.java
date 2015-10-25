@@ -10,10 +10,10 @@ import com.workflow.application.WorkerTask;
 import com.workflow.application.helper.InputHelper;
 import com.workflow.application.util.Util;
 
-public class MapTask extends WorkerTask implements Task{
+public class MapTask implements Task{
 
 	@Override
-	public Object[] performTask(InputHelper helper) {
+	public Object[] performTask(InputHelper helper,WorkerTask task) {
 
 		
 		String workingdir = System.getProperty("WorkingDir");
@@ -37,7 +37,7 @@ public class MapTask extends WorkerTask implements Task{
     	
     	Util.writeShAndStartProcess(command,workingdir,random);
     	
-    	List<FileProperties> resultFiles=this.uploadResults(outfiles, workingdir, helper.getOutputFile());
+    	List<FileProperties> resultFiles=task.uploadResults(outfiles, workingdir, helper.getOutputFile());
     	return new Object[]{"OK",resultFiles};
 	
 	}

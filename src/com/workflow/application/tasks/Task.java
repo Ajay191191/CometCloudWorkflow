@@ -5,5 +5,5 @@ import com.workflow.application.helper.InputHelper;
 
 public interface Task {
 
-	public Object[] performTask(InputHelper helper);
+	public Object[] performTask(InputHelper helper,WorkerTask task);
 }
