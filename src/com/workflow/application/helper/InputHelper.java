@@ -18,6 +18,7 @@ public class InputHelper{
 	private List<FileProperties> inputFiles;
 	private HashMap <String,List>inputsHash;
 	private WorkflowTaskTuple tasktuple;
+	private String inputLocation;
 	
 	public HashMap<String, List> getInputsHash() {
 		return inputsHash;
@@ -54,6 +55,10 @@ public class InputHelper{
 	public HashMap<String, List> calculateInputsHash() {
 		inputsHash = new HashMap<String, List>();
 		for (FileProperties fp:this.inputFiles){
+			if(getInputLocation()==null){
+				String[] split = fp.getLocation().split(":");
+				setInputLocation(split.length>0?split[1]:fp.getLocation());
+			}
 	        List temp=inputsHash.get(fp.getLocation());
 	        if (temp==null){
 	            temp=new ArrayList();
@@ -82,5 +87,11 @@ public class InputHelper{
 	@Override
 	public String toString() {
 		return "Method: " + this.method + " Input: " + this.inputFiles + " Output: " + this.outputFile + " TaskTuple: " + this.tasktuple;
+	}
+	public String getInputLocation() {
+		return inputLocation;
+	}
+	public void setInputLocation(String inputLocation) {
+		this.inputLocation = inputLocation;
 	}
 }

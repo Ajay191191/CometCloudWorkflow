@@ -17,27 +17,23 @@ public class ReduceTask implements Task{
 
 		String workingDir = System.getProperty("WorkingDir");
 		List outfiles=new ArrayList();
-		List inputfiles=new ArrayList();
+		List<String> parameters=new ArrayList();
 		String outputFile = Math.random()*1000 + "_"+System.getProperty("Name")+".bam";
+		String storageLocation = null;
+		String stagingLocation = helper.getInputLocation();
+		System.out.println("Location " + stagingLocation);
 		for(String location: helper.getInputsHash().keySet()){
 			List<String> files = helper.getInputsHash().get(location);
 			for(String inputFile:files){
-				/*try(Scanner reader = new Scanner(new File(workingdir,inputFile))){
-					sum += reader.nextInt();
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}*/
-				inputfiles.add(inputFile);
+				parameters.add("INPUT="+stagingLocation + File.separator + inputFile);
 			}
-			if(inputfiles.size()==2){
-				//INPUT=$SORTEDBAMFILENAME OUTPUT=$MARKDUPLICATESBAM REMOVE_DUPLICATES=false METRICS_FILE=metrics.txt
-				new MarkDuplicates().instanceMain(new String[]{"INPUT="+inputfiles.get(0),"INPUT="+inputfiles.get(1),"OUTPUT="+outputFile,"REMOVE_DUPLICATES=false","METRICS_FILE="+workingDir+File.separator+"metrics.txt"});
-				outfiles.add(outputFile);
-			}
+			parameters.add("OUTPUT="+workingDir+File.separator+outputFile);
+			parameters.add("REMOVE_DUPLICATES=true");
+			parameters.add("METRICS_FILE="+workingDir+File.separator+"metrics.txt");
+			//INPUT=$SORTEDBAMFILENAME OUTPUT=$MARKDUPLICATESBAM REMOVE_DUPLICATES=false METRICS_FILE=metrics.txt
+			new MarkDuplicates().instanceMain(parameters.toArray(new String[0]));
+			outfiles.add(outputFile);
 		}
-		
 		List<FileProperties> resultFiles=task.uploadResults(outfiles,workingDir, helper.getOutputFile());
 		return new Object[]{"OK",resultFiles};
 	
