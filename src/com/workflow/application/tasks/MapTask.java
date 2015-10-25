@@ -28,9 +28,10 @@ public class MapTask implements Task{
     	}
     	
     	double random = Math.random() * 10000;
-		String outputFile = random + "_"+System.getProperty("Name")+".sam";
-    	
-    	command.add(">");
+		String outputFile = random + "_"+System.getProperty("Name");
+ 
+		command.addAll(Util.getPipeSortCommand());
+		
     	command.add(workingdir + File.separator + outputFile);
     	
     	outfiles.add(outputFile);

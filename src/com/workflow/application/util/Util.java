@@ -30,6 +30,15 @@ public class Util {
     	return command;
 	}
 	
+	public static List<String> getPipeSortCommand(){
+		List<String> command = new ArrayList<String>();
+		command.add("|");
+		command.add("/cac/u01/jz362/Workflow/samtools/samtools-1.2/samtools");
+		command.add("sort");
+		command.add("-");
+		return command;
+	}
+	
 	public static void writeShAndStartProcess(List<String> commands,String workingDir, double random){
 		StringBuilder builder = new StringBuilder();
 		for(String command:commands){

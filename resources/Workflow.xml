@@ -23,6 +23,6 @@
      <objective id="S2" type="DeadlineLocalityAware" value="4776" />
 </objectives>
 <transitions>
-        <transition from="S1" to="S2"/>
+        <transition from="S1" to="S2" blocking="false"/>
 </transitions>
 </xflow>
