@@ -34,7 +34,7 @@ public class MapTask implements Task{
 		
     	command.add(workingdir + File.separator + outputFile);
     	
-    	outfiles.add(outputFile);
+    	outfiles.add(outputFile+".bam");	//To keep the naming consistent as samtools appends its own bam extension. 
     	
     	Util.writeShAndStartProcess(command,workingdir,random);
     	
