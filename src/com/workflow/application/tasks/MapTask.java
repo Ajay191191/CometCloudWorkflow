@@ -17,7 +17,7 @@ public class MapTask implements Task{
 
 		
 		String workingdir = System.getProperty("WorkingDir");
-    	List<String> command = Util.getBWACommand();
+    	List<String> command = Util.getBWACommand(helper.getTasktuple().getTaskid()+"_"+System.getProperty("Name"));
     	
     	List<String> outfiles=new ArrayList<String>();
     	for(String location: helper.getInputsHash().keySet()){

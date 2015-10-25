@@ -104,7 +104,7 @@ public class ExternalMarkDuplicates extends AbstractMarkDuplicatesCommandLinePro
 
     /** Stock main method. */
     public static void main(final String[] args) {
-        new MarkDuplicates().instanceMainWithExit(args);
+        new ExternalMarkDuplicates().instanceMainWithExit(args);
     }
 
     /**
@@ -287,6 +287,7 @@ public class ExternalMarkDuplicates extends AbstractMarkDuplicatesCommandLinePro
             this.libraryIdGenerator = new LibraryIdGenerator(header);
         }
 
+        Set<String> keyList = new TreeSet<String>();
         while (iterator.hasNext()) {
             final SAMRecord rec = iterator.next();
 
@@ -301,7 +302,6 @@ public class ExternalMarkDuplicates extends AbstractMarkDuplicatesCommandLinePro
                 pgIdsSeen.add(rec.getStringAttribute(SAMTag.PG.name()));
             }
 
-            Set<String> keyList = new TreeSet<String>();
             if (rec.getReadUnmappedFlag()) {
                 if (rec.getReferenceIndex() == -1) {
                     // When we hit the unmapped reads with no coordinate, no reason to continue.
@@ -310,17 +310,22 @@ public class ExternalMarkDuplicates extends AbstractMarkDuplicatesCommandLinePro
                 // If this read is unmapped but sorted with the mapped reads, just skip it.
             } else if (!rec.isSecondaryOrSupplementary()) {
                 final ReadEndsForMarkDuplicates fragmentEnd = buildReadEnds(header, index, rec, useBarcodes);
+                final String key = rec.getAttribute(ReservedTagConstants.READ_GROUP_ID) + ":" + rec.getReadName();
+                if(keyList.contains(key)){
+                	continue;
+                }
+                keyList.add(key);
                 this.fragSort.add(fragmentEnd);
 
                 if (rec.getReadPairedFlag() && !rec.getMateUnmappedFlag()) {
-                    final String key = rec.getAttribute(ReservedTagConstants.READ_GROUP_ID) + ":" + rec.getReadName();
                     ReadEndsForMarkDuplicates pairedEnds = tmp.remove(rec.getReferenceIndex(), key);
 
                     // See if we've already seen the first end or not
-                    if (pairedEnds == null && !keyList.contains(key)) {
-                        pairedEnds = buildReadEnds(header, index, rec, useBarcodes);
-                        tmp.put(pairedEnds.read2ReferenceIndex, key, pairedEnds);
-                        keyList.add(key);
+                    if (pairedEnds == null) {
+                    pairedEnds = buildReadEnds(header, index, rec, useBarcodes);
+                    tmp.put(pairedEnds.read2ReferenceIndex, key, pairedEnds);
+
+                    	
                     } else {
                         final int sequence = fragmentEnd.read1ReferenceIndex;
                         final int coordinate = fragmentEnd.read1Coordinate;

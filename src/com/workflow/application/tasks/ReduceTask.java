@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import picard.sam.markduplicates.ExternalMarkDuplicates;
+import picard.sam.markduplicates.MarkDuplicates;
 import tassl.application.cometcloud.FileProperties;
 
 import com.workflow.application.WorkerTask;
@@ -33,7 +33,7 @@ public class ReduceTask implements Task{
 			}
 			if(inputfiles.size()==2){
 				//INPUT=$SORTEDBAMFILENAME OUTPUT=$MARKDUPLICATESBAM REMOVE_DUPLICATES=false METRICS_FILE=metrics.txt
-				new ExternalMarkDuplicates().instanceMain(new String[]{"INPUT="+outfiles.get(0),"INPUT="+outfiles.get(1),"OUTPUT="+outputFile,"REMOVE_DUPLICATES=false","METRICS_FILE="+workingDir+File.separator+"metrics.txt"});
+				new MarkDuplicates().instanceMain(new String[]{"INPUT="+inputfiles.get(0),"INPUT="+inputfiles.get(1),"OUTPUT="+outputFile,"REMOVE_DUPLICATES=false","METRICS_FILE="+workingDir+File.separator+"metrics.txt"});
 				outfiles.add(outputFile);
 			}
 		}

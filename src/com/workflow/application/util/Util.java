@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 public class Util {
 
-	public static List<String> getBWACommand(){
+	public static List<String> getBWACommand(String groupID){
 		List<String> command = new ArrayList<String>();
     	command.add("/cac/u01/jz362/Workflow/bwa/bwa-0.7.12/bwa");
     	command.add("mem");
@@ -23,7 +23,7 @@ public class Util {
     	command.add("-t");
     	command.add("20");
     	command.add("-R");
-    	command.add("\"@RG\\tID:group1\\tSM:SRR622457\\tPL:illumina\\tLB:lib1\\tPU:unit1\"");
+    	command.add("\"@RG\\tID:group"+groupID+"\\tSM:SRR622457\\tPL:illumina\\tLB:lib1\\tPU:unit1\"");
     	command.add("/cac/u01/jz362/Workflow/Reference/hg19.fasta");
     	return command;
 	}
