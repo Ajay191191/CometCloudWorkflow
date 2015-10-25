@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xflow name="Workflow">
+<stages>
+  <stage id="S1" type="AppGenerateClass" value="com.workflow.application.GeneratorTask" method="map"/>
+  <stage id="S1" type="PropertyFile" value="./sample.properties"/>
+  <stage id="S1" type="Application" value="Workflow"/>
+  <stage id="S1" type="InputData">
+        <InputData value="jz362@dell01:/cac/u01/jz362/cometcloud/inputs/" zone="zoneA" site="clusterTest" constraint=""/>
+  </stage>
+  <stage id="S1" type="Results" value=" " zone="zoneA" site="clusterTest" constraint="zoneA,siteIndia,siteSierra,zoneB,clusterTest"/>
+
+  <stage id="S2" type="AppGenerateClass" value="com.workflow.application.GeneratorTask" method="reduce"/>
+  <stage id="S2" type="PropertyFile" value="./sample.properties"/>
+  <stage id="S2" type="Application" value="Workflow"/>
+  <stage id="S2" type="InputData">
+	<InputData value="jz362@dell01:/cac/u01/jz362/cometcloud/inputs/" zone="zoneA" site="clusterTest"  constraint=""/>    
+  </stage>
+  <stage id="S2" type="Results" value="jz362@dell01:/cac/u01/jz362/cometcloud/output/" zone="zoneA" site="clusterTest" constraint=""/>
+
+</stages>
+<objectives>
+     <objective id="S1" type="DeadlineLocalityAware" value="1377" />
+     <objective id="S2" type="DeadlineLocalityAware" value="4776" />
+</objectives>
+<transitions>
+        <transition from="S1" to="S2"/>
+</transitions>
+</xflow>
