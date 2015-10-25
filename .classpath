@@ -11,5 +11,8 @@
 	<classpathentry kind="lib" path="/home/ajay/cometCloud/cometWorkflow08052015/lib/concurrent.jar"/>
 	<classpathentry kind="lib" path="/home/ajay/cometCloud/cometWorkflow08052015/lib/ganymed-ssh2-build210.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Picard"/>
+	<classpathentry kind="lib" path="/home/ajay/cometCloud/picard/picard/dist/picard-lib.jar"/>
+	<classpathentry kind="lib" path="/home/ajay/cometCloud/picard/picard/dist/htsjdk_lib_dir/htsjdk-1.139.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

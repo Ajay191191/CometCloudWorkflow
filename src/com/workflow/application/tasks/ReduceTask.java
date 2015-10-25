@@ -26,9 +26,12 @@ public class ReduceTask implements Task{
 				}*/
 				outfiles.add(inputFile);
 			}
+			if(outfiles.size()==2){
+				//INPUT=$SORTEDBAMFILENAME OUTPUT=$MARKDUPLICATESBAM REMOVE_DUPLICATES=false METRICS_FILE=metrics.txt
+			}
 		}
 		
-		List<FileProperties> resultFiles=task.uploadResults(outfiles,System.getProperty("WorkingDir") , helper.getOutputFile());
+		List<FileProperties> resultFiles=task.uploadResults(outfiles,System.getProperty("WorkingDir"), helper.getOutputFile());
 		return new Object[]{"OK",resultFiles};
 	
 	}

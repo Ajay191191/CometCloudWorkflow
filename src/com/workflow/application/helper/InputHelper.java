@@ -3,17 +3,14 @@ package com.workflow.application.helper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import com.workflow.application.WorkerTask;
+import tassl.application.cometcloud.FileProperties;
+import tassl.application.cometcloud.WorkflowTaskTuple;
+
 import com.workflow.application.tasks.MapTask;
 import com.workflow.application.tasks.ReduceTask;
 import com.workflow.application.tasks.Task;
 import com.workflow.application.util.HelperConstants;
-
-import tassl.application.cometcloud.FileProperties;
-import tassl.application.cometcloud.WorkflowTaskTuple;
 
 public class InputHelper{
 	private String method;
