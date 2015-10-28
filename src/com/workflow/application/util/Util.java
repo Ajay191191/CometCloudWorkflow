@@ -37,12 +37,50 @@ public class Util {
 		return command;
 	}
 	
-	public static void writeShAndStartProcess(List<String> commands,String workingDir, double random){
+	public static List<String> getContigsListCommand(String directoryName){
+		//~/Workflow/samtools/samtools-1.2/samtools view -H 542.0115432785603_clusterTest.bam | grep "^@SQ" | awk -F":" '{print $2}' | awk '{print $1}' > contigs.txt
+		List<String> command = new ArrayList<String>();
+		command.add("mkdir "+directoryName+";");
+		command.add("/cac/u01/jz362/Workflow/samtools/samtools-1.2/samtools");
+		command.add("|");
+		command.add("grep \"^@SQ\"");
+		command.add("|");
+		command.add("awk -F\":\" '{print $2}'");
+		command.add("|");
+		command.add("awk '{print $1}'");
+		command.add(">");
+		return command;
+	}
+	
+	public static List<String> getSplitBamByContigs(String contigsFile,String bamFile,String outputFilePattern){
+		//for c in `cat contigs.txt` ; do echo processing $c; ~/Workflow/samtools/samtools-1.2/samtools view -bh 542.0115432785603_clusterTest.bam $c > split/$c.bam; don
+		List<String> command = new ArrayList<String>();
+		command.add("for c in `cat "+contigsFile+"`;");
+		command.add("/cac/u01/jz362/Workflow/samtools/samtools-1.2/samtools");
+		command.add("view");
+		command.add("-bh");
+		command.add(bamFile);
+		command.add("$c");
+		command.add(">");
+		command.add(outputFilePattern);
+		command.add(";");
+		command.add("done");
+		return command;
+	}
+	
+	public static List<String> getIndexCommand(){
+		List<String> command = new ArrayList<String>();
+		command.add("/cac/u01/jz362/Workflow/samtools/samtools-1.2/samtools");
+		command.add("index");
+		return command;
+	}
+	
+	public static void writeShAndStartProcess(List<String> commands,String workingDir, double random,String nameExtension){
 		StringBuilder builder = new StringBuilder();
 		for(String command:commands){
 			builder.append(command+" ");
 		}
-		String shFile = random+"_bwa.sh";
+		String shFile = random+nameExtension;
 		try(BufferedWriter writer = new BufferedWriter(new FileWriter(new File(workingDir,shFile)))){
 			writer.write("#!/bin/sh");
 			writer.write("\n");

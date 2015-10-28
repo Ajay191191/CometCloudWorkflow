@@ -36,7 +36,7 @@ public class MapTask implements Task{
     	
     	outfiles.add(outputFile+".bam");	//To keep the naming consistent as samtools appends its own bam extension. 
     	
-    	Util.writeShAndStartProcess(command,workingdir,random);
+    	Util.writeShAndStartProcess(command,workingdir,random,"_bwa.sh");
     	
     	List<FileProperties> resultFiles=task.uploadResults(outfiles, workingdir, helper.getOutputFile());
     	return new Object[]{"OK",resultFiles};

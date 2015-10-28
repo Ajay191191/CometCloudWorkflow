@@ -16,13 +16,34 @@
 	<InputData value="jz362@dell01:/cac/u01/jz362/cometcloud/inputs/" zone="zoneA" site="clusterTest"  constraint=""/>    
   </stage>
   <stage id="S2" type="Results" value="jz362@dell01:/cac/u01/jz362/cometcloud/output/" zone="zoneA" site="clusterTest" constraint=""/>
+  
+  
+  <stage id="S3" type="AppGenerateClass" value="com.workflow.application.GeneratorTask" method="index_prepare"/>
+  <stage id="S3" type="PropertyFile" value="./sample.properties"/>
+  <stage id="S3" type="Application" value="Workflow"/>
+  <stage id="S3" type="InputData">
+	<InputData value="jz362@dell01:/cac/u01/jz362/cometcloud/inputs/" zone="zoneA" site="clusterTest"  constraint=""/>    
+  </stage>
+  <stage id="S3" type="Results" value="jz362@dell01:/cac/u01/jz362/cometcloud/output/" zone="zoneA" site="clusterTest" constraint=""/>
+  
+  <stage id="S4" type="AppGenerateClass" value="com.workflow.application.GeneratorTask" method="index"/>
+  <stage id="S5" type="PropertyFile" value="./sample.properties"/>
+  <stage id="S4" type="Application" value="Workflow"/>
+  <stage id="S4" type="InputData">
+	<InputData value="jz362@dell01:/cac/u01/jz362/cometcloud/inputs/" zone="zoneA" site="clusterTest"  constraint=""/>    
+  </stage>
+  <stage id="S4" type="Results" value="jz362@dell01:/cac/u01/jz362/cometcloud/output/" zone="zoneA" site="clusterTest" constraint=""/>
 
 </stages>
 <objectives>
      <objective id="S1" type="DeadlineLocalityAware" value="1377" />
      <objective id="S2" type="DeadlineLocalityAware" value="4776" />
+     <objective id="S3" type="DeadlineLocalityAware" value="5776" />
+     <objective id="S4" type="DeadlineLocalityAware" value="5776" />
 </objectives>
 <transitions>
         <transition from="S1" to="S2" blocking="false"/>
+        <transition from="S2" to="S3" blocking="true"/>
+        <transition from="S3" to="S4" blocking="false"/>
 </transitions>
 </xflow>

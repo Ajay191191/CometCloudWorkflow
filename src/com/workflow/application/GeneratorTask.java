@@ -18,9 +18,9 @@ public class GeneratorTask extends GenerateTasksAbstract {
 	    this.loadProperties(propertyFileValues);
 	    if(method.equals("map")){
 	        taskObj=map(input,output,propertyFileValues);
-	    }else if(method.equals("reduce")){
+	    }else {
 	        HashMap <String,FileProperties>previousFiles=this.generatePreviousResultFiles(stageId, dependencies);
-	        taskObj=reduce(input,output,propertyFileValues,previousFiles);
+	        taskObj=reduce(input,output,propertyFileValues,previousFiles,method);
 	    }
 	    return taskObj;
 	}
@@ -67,7 +67,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 	    return new GenerateTasksObject(taskParams,taskRequirement, minTime, maxTime,inputList,null);
 	}
 
-	public GenerateTasksObject reduce(List<FileProperties> input,FileProperties output, String propertyFile,HashMap<String, FileProperties> previousResults) {
+	public GenerateTasksObject reduce(List<FileProperties> input,FileProperties output, String propertyFile,HashMap<String, FileProperties> previousResults, String method) {
 		
 		int taskid = 0;
 		List<Double> minTime = new ArrayList();
@@ -83,7 +83,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 		inputList.add(inputs);
 		double minTimeVal = Double.parseDouble(getProperty("minTime"));
 		double maxTimeVal = Double.parseDouble(getProperty("maxTime"));
-		taskParams.add(taskid, Arrays.asList("reduce",output, inputs));
+		taskParams.add(taskid, Arrays.asList(method,output, inputs));
 		taskRequirement.add("large"); // Requirement
 		minTime.add(minTimeVal);
 		maxTime.add(maxTimeVal);

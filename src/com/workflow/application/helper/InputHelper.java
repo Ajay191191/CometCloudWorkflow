@@ -7,6 +7,8 @@ import java.util.List;
 import tassl.application.cometcloud.FileProperties;
 import tassl.application.cometcloud.WorkflowTaskTuple;
 
+import com.workflow.application.tasks.IndexPrepare;
+import com.workflow.application.tasks.IndexTask;
 import com.workflow.application.tasks.MapTask;
 import com.workflow.application.tasks.ReduceTask;
 import com.workflow.application.tasks.Task;
@@ -74,7 +76,12 @@ public class InputHelper{
 			return new MapTask();
 		} else if (this.method.equals(HelperConstants.REDUCE)) {
 			return new ReduceTask();
+		}else if (this.method.equals(HelperConstants.INDEX_PREPARE)) {
+			return new IndexPrepare();
+		}else if (this.method.equals(HelperConstants.INDEX)) {
+			return new IndexTask();
 		}
+		
 		return null;
 	}
 	public WorkflowTaskTuple getTasktuple() {
