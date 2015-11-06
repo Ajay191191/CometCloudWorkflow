@@ -4,15 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import tassl.application.cometcloud.FileProperties;
-import tassl.application.cometcloud.WorkflowTaskTuple;
-
 import com.workflow.application.tasks.IndexPrepare;
 import com.workflow.application.tasks.IndexTask;
 import com.workflow.application.tasks.MapTask;
+import com.workflow.application.tasks.PrepareBaseRecalibrator;
+import com.workflow.application.tasks.RealignerTargetCreatorTask;
 import com.workflow.application.tasks.ReduceTask;
 import com.workflow.application.tasks.Task;
 import com.workflow.application.util.HelperConstants;
+
+import tassl.application.cometcloud.FileProperties;
+import tassl.application.cometcloud.WorkflowTaskTuple;
 
 public class InputHelper{
 	private String method;
@@ -80,6 +82,10 @@ public class InputHelper{
 			return new IndexPrepare();
 		}else if (this.method.equals(HelperConstants.INDEX)) {
 			return new IndexTask();
+		}else if (this.method.equals(HelperConstants.REALIGNERTARGETCREATOR)) {
+			return new RealignerTargetCreatorTask();
+		}else if (this.method.equals(HelperConstants.PREPAREBASERECALIBRATOR)) {
+			return new PrepareBaseRecalibrator();
 		}
 		
 		return null;

@@ -18,12 +18,22 @@ public class IndexPrepare implements Task {
 		
 		double random = Math.random() * 10000;
 		String outputContigsFile = random + "_"+System.getProperty("Name")+"_contigs.txt";
+		String outputDir = random + "_"+System.getProperty("Name");
+		
 		
 		List<String> contigsListCommand = Util.getContigsListCommand(random+ "_"+System.getProperty("Name"));
 		contigsListCommand.add(outputContigsFile);
 		
-		Util.writeShAndStartProcess(contigsListCommand, workingDir, random, "_prepareIndex.sh");
-		File dir= new File(random+ "_"+System.getProperty("Name"));
+		Util.runProcessWithListOfCommands(contigsListCommand);
+		
+		for(String location: helper.getInputsHash().keySet()){
+			List<String> files = helper.getInputsHash().get(location);
+			for(String inputFile:files){
+				Util.getSplitBamByContigs(outputContigsFile, inputFile, outputDir);
+			}
+		}
+		
+		File dir= new File(outputDir);
 		List<String> outfiles=new ArrayList<String>();
 		for(String str:dir.list()){
 			File file = new File(str);

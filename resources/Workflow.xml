@@ -41,6 +41,17 @@
 	<InputData value="jz362@dell01:/cac/u01/jz362/cometcloud/inputs/" zone="zoneA" site="clusterTest"  constraint=""/>    
   </stage>
   <stage id="S5" type="Results" value="jz362@dell01:/cac/u01/jz362/cometcloud/output/" zone="zoneA" site="clusterTest" constraint=""/>
+  
+  <stage id="S6" type="AppGenerateClass" value="com.workflow.application.GeneratorTask" method="prepareBaseRecalibrator"/>
+  <stage id="S6" type="PropertyFile" value="./sample.properties"/>
+  <stage id="S6" type="Application" value="Workflow"/>
+  <stage id="S6" type="InputData">
+	<InputData value="jz362@dell01:/cac/u01/jz362/cometcloud/inputs/" zone="zoneA" site="clusterTest"  constraint=""/>    
+  </stage>
+  <stage id="S6" type="Results" value="jz362@dell01:/cac/u01/jz362/cometcloud/output/" zone="zoneA" site="clusterTest" constraint=""/>
+  
+  
+  
 
 </stages>
 <objectives>
@@ -48,11 +59,13 @@
      <objective id="S2" type="DeadlineLocalityAware" value="4776" />
      <objective id="S3" type="DeadlineLocalityAware" value="5776" />
      <objective id="S4" type="DeadlineLocalityAware" value="5776" />
+     <objective id="S5" type="DeadlineLocalityAware" value="5776" />
 </objectives>
 <transitions>
         <transition from="S1" to="S2" blocking="false"/>
         <transition from="S2" to="S3" blocking="true"/>
         <transition from="S3" to="S4" blocking="false"/>
         <transition from="S4" to="S5" blocking="false"/>
+        <transition from="S5" to="S6" blocking="true"/>
 </transitions>
 </xflow>

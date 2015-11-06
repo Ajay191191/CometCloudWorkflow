@@ -52,7 +52,7 @@ public class Util {
 		return command;
 	}
 	
-	public static List<String> getSplitBamByContigs(String contigsFile,String bamFile,String outputFilePattern){
+	public static List<String> getSplitBamByContigs(String contigsFile,String bamFile,String outputDirectory){
 		//for c in `cat contigs.txt` ; do echo processing $c; ~/Workflow/samtools/samtools-1.2/samtools view -bh 542.0115432785603_clusterTest.bam $c > split/$c.bam; don
 		List<String> command = new ArrayList<String>();
 		command.add("for c in `cat "+contigsFile+"`;");
@@ -62,7 +62,7 @@ public class Util {
 		command.add(bamFile);
 		command.add("$c");
 		command.add(">");
-		command.add(outputFilePattern);
+		command.add(outputDirectory+"/$c.bam");
 		command.add(";");
 		command.add("done");
 		return command;
@@ -92,8 +92,64 @@ public class Util {
 		
 		builder = null;
 		
+		runProcessWithShell(workingDir, shFile);
+	}
+	
+	public static List<String> getRealignerTargetCreatorCommand(int numberOfThreads,String inputBam,String outputFile){
+		List<String> command = new ArrayList<>();
+		
+		//java -jar $GATKJARDIR/GenomeAnalysisTK.jar -T RealignerTargetCreator -nt $NUMDATATHREADS -R 
+		//$REFERENCEDIR -I $REORDERBAM -o $OUTPUTINTERVALS --defaultBaseQualities 1
+
+		command.add("-T");
+		command.add("RealignerTargetCreator");
+		command.add("-nt");
+		command.add(numberOfThreads+"");
+		command.add("-R");
+		command.add("/cac/u01/jz362/Workflow/Reference/hg19.fasta");
+		command.add("-I");
+		command.add(inputBam);
+		command.add("-defaultBaseQualities");
+		command.add("1");
+		command.add("-o");
+		command.add(outputFile);
+		
+		return command;
+	}
+	
+	public static List<String> getIndelRealignerCommand(String inputBam,String inputIntervals,String outputBam){
+		List<String> command= new ArrayList<>();
+		
+		//java -Djava.io.tmpdir=$TEMPDIR -jar $GATKJARDIR/GenomeAnalysisTK.jar -T IndelRealigner -R $REFERENCEDIR -I $REORDERBAM 
+		//-targetIntervals $OUTPUTINTERVALS -o $REALIGNEDBAM -LOD 5 --defaultBaseQualities 1
+
+		command.add("-T");
+		command.add("IndelRealigner");
+		command.add("-R");
+		command.add("/cac/u01/jz362/Workflow/Reference/hg19.fasta");
+		command.add("-I");
+		command.add(inputBam);
+		command.add("-defaultBaseQualities");
+		command.add("1");
+		command.add("-o");
+		command.add(outputBam);
+		
+		return command;
+	}
+	
+	public static void runProcessWithShell(String workingDir,String shFile){
+		ProcessBuilder pb = new ProcessBuilder(Arrays.asList("bash",workingDir+File.separator+shFile));
+		
+		runProcess(pb);
+	}
+	
+	public static void runProcessWithListOfCommands(List<String> command){
+		ProcessBuilder pb = new ProcessBuilder(command);
+		runProcess(pb);
+	}
+
+	private static void runProcess(ProcessBuilder pb) {
 		try {
-			ProcessBuilder pb = new ProcessBuilder(Arrays.asList("bash",workingDir+File.separator+shFile));
 			Process process = pb.start();
 			
 			int exitValue = process.waitFor();
@@ -121,7 +177,6 @@ public class Util {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 	
 

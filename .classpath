@@ -2,16 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="resources"/>
-	<classpathentry kind="lib" path="/home/ajay/cometCloud/cometWorkflow08052015/dist/cometWorkflow.jar"/>
-	<classpathentry kind="lib" path="/home/ajay/cometCloud/cometWorkflow08052015/lib/Programming5.jar"/>
-	<classpathentry kind="lib" path="/home/ajay/cometCloud/cometWorkflow08052015/lib/CometCloud.jar"/>
-	<classpathentry kind="lib" path="/home/ajay/cometCloud/cometWorkflow08052015/lib/log4j-1.2.15.jar"/>
-	<classpathentry kind="lib" path="/home/ajay/cometCloud/cometWorkflow08052015/lib/commons-lang.jar"/>
-	<classpathentry kind="lib" path="/home/ajay/cometCloud/cometWorkflow08052015/lib/pf.jar"/>
-	<classpathentry kind="lib" path="/home/ajay/cometCloud/cometWorkflow08052015/lib/concurrent.jar"/>
-	<classpathentry kind="lib" path="/home/ajay/cometCloud/cometWorkflow08052015/lib/ganymed-ssh2-build210.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/home/ajay/cometCloud/picard/picard/dist/picard-lib.jar"/>
-	<classpathentry kind="lib" path="/home/ajay/cometCloud/picard/picard/dist/htsjdk_lib_dir/htsjdk-1.139.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Cometcloud"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

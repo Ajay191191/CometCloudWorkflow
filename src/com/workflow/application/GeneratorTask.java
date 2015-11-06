@@ -23,7 +23,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 	    }else if(method.equals(HelperConstants.REDUCE)){
 	        HashMap <String,FileProperties>previousFiles=this.generatePreviousResultFiles(stageId, dependencies);
 	        taskObj=reduce(input,output,propertyFileValues,previousFiles);
-	    }else if(method.equals(HelperConstants.INDEX_PREPARE)){
+	    }else if(method.equals(HelperConstants.INDEX_PREPARE) || method.equals(HelperConstants.INDEX) || method.equals(HelperConstants.REALIGNERTARGETCREATOR)|| method.equals(HelperConstants.PREPAREBASERECALIBRATOR)){
 	        HashMap <String,FileProperties>previousFiles=this.generatePreviousResultFiles(stageId, dependencies);
 	        taskObj=reduce(input,output,propertyFileValues,previousFiles);
 	    }
@@ -98,7 +98,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 		return new GenerateTasksObject(taskParams, taskRequirement, minTime,maxTime, inputList, null);
 	}
 
-	public GenerateTasksObject index(List<FileProperties> input, FileProperties output, String propertyFile,HashMap<String, FileProperties> previousResults){
+	/*public GenerateTasksObject indexPrepare(List<FileProperties> input, FileProperties output, String propertyFile,HashMap<String, FileProperties> previousResults){
 		
 		int taskid = 0;
 		List<Double> minTime = new ArrayList();
@@ -119,7 +119,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 			maxTime.add(maxTimeVal);
 			inputList.add(inputs);
 			taskid++;
-			return new GenerateTasksObject(taskParams, taskRequirement, minTime,maxTime, inputList, null);
 		}
-	}
+		return new GenerateTasksObject(taskParams, taskRequirement, minTime,maxTime, inputList, null);
+	}*/
 }
