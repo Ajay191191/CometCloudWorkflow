@@ -3,6 +3,8 @@ package com.workflow.application.util;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,8 +12,13 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.workflow.application.tasks.worker.ContigSplitBAMWorker;
+import com.workflow.application.tasks.worker.PoolFactory;
+import com.workflow.application.tasks.worker.Worker;
 
 public class Util {
 
@@ -215,6 +222,55 @@ public class Util {
 		return command;
 	}
 	
+	public static List<String> getHaplotypeCallerCommand(int numberOfThreads,String inputBam,String outputVCF){
+		//-T HaplotypeCaller -nct $NUMCPUTHREADS -R $REFERENCEDIR -I $RECALIBRATEDBAM -o $OUTPUTVCF -D $DBSNFP135VCF 
+		//-A AlleleBalance -A Coverage -A HomopolymerRun -A FisherStrand -A HaplotypeScore -A HardyWeinberg -A ReadPosRankSumTest 
+		//-A QualByDepth -A MappingQualityRankSumTest -A VariantType -A MappingQualityZero -minPruning 10 -stand_call_conf 30.0 -stand_emit_conf 10.0
+		List<String> command = new ArrayList<String>();
+
+		command.add("-T");
+		command.add("HaplotypeCaller");
+		command.add("-nct");
+		command.add(numberOfThreads+"");
+		command.add("-R");
+		command.add("/cac/u01/jz362/Workflow/Reference/hg19.fasta");
+		command.add("-I");
+		command.add(inputBam);
+		command.add("-o");
+		command.add(outputVCF);
+		command.add("-D");
+		command.add("/cac/u01/jz362/Workflow/dbsnp/dbsnp_137.hg19.vcf");
+		command.add("-A");
+		command.add("AlleleBalance");
+		command.add("-A");
+		command.add("Coverage");
+		command.add("-A");
+		command.add("HomopolymerRun");
+		command.add("-A");
+		command.add("FisherStrand");
+		command.add("-A");
+		command.add("HaplotypeScore");
+		command.add("-A");
+		command.add("HardyWeinberg");
+		command.add("-A");
+		command.add("ReadPosRankSumTest");
+		command.add("-A");
+		command.add("QualByDepth");
+		command.add("-A");
+		command.add("MappingQualityRankSumTest");
+		command.add("-A");
+		command.add("VariantType");
+		command.add("-minPruning");
+		command.add("10");
+		command.add("-stand_call_conf");
+		command.add("30.0");
+		command.add("-stand_emit_conf");
+		command.add("10.0");
+		
+		
+		return command;
+	}
+	
 	public static void runProcessWithShell(String workingDir,String shFile){
 		ProcessBuilder pb = new ProcessBuilder(Arrays.asList("bash",workingDir+File.separator+shFile));
 		
@@ -270,5 +326,35 @@ public class Util {
 		}
 	}
 
+	
+	public static List<String> splitBAMbyChromosome(File contigsFile, String inputBAM){
+		
+		List<String> contigsList = new ArrayList<>(24);
+		String line;
+		try(BufferedReader reader = new BufferedReader(new FileReader(contigsFile))){
+			while((line=reader.readLine())!=null){
+				contigsList.add(line);
+			}
+			contigsList.add("unmapped");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		List<Worker<String>>  bamsplitWorker = new ArrayList<>();
+		PoolFactory<String> factory = new PoolFactory<>(bamsplitWorker);
+		for(String contig:contigsList){
+			bamsplitWorker.add(new ContigSplitBAMWorker(contig, inputBAM));
+		}
+		try {
+			List<String> runAndGetResults = factory.runAndGetResults();
+			return runAndGetResults;
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 }

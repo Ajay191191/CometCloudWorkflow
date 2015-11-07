@@ -9,5 +9,7 @@ public class HelperConstants {
 	public static String REALIGNERTARGETCREATOR = "RealignerTargetCreator";
 	public static String PREPAREBASERECALIBRATOR = "prepareBaseRecalibrator";
 	public static String BASERECALIBRATOR = "BaseRecalibrator";
-	public static String PREPAREPRINTREADS = "PreparePrintReads";
+	public static String HAPLOTYPECALLER = "haplotypeCaller";
+	public static String PRINTREADS = "printReads";
+	
 }

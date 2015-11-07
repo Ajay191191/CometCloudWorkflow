@@ -18,9 +18,7 @@ public class WorkerTask extends WorkflowMeteorGenericWorker {
 	public Object computeTaskSpecific(Object dataobj, WorkflowTaskTuple tasktuple) {
 	    Logger.getLogger(WorkerTask.class.getName()).log(Level.INFO, "WorkerTask "+this.getPeerIP()+" gets taskid " + tasktuple.getTaskid());
 	    
-	    List data = (List) dataobj;
-
-	    InputHelper inputHelper = new InputHelper((String)data.get(0), (FileProperties)data.get(1), (List<FileProperties>)data.get(2),tasktuple);
+	    InputHelper inputHelper = new InputHelper((List)dataobj,tasktuple);
 	    Logger.getLogger(WorkerTask.class.getName()).log(Level.INFO,"" + inputHelper);
 	    
 	    String workingdir=System.getProperty("WorkingDir");
@@ -47,6 +45,4 @@ public class WorkerTask extends WorkflowMeteorGenericWorker {
 	public List<FileProperties> uploadResults(List<String> arg0,String arg1, FileProperties arg2) {
 		return super.uploadResults(arg0, arg1, arg2);
 	}
-	
-	
 }

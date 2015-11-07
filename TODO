@@ -1,5 +1,9 @@
 //
 
-PreparePrintReads: Create a threaded task which splits bam by chromosome.
-Create printreads task. Check if the calibrated csv is passed to all the print read commands.
+BaseRecalibrator: Create a threaded task which splits bam by chromosome. Add the calibrated csv and the split bams in the output list. 
+After that, in generateTasks : 
+1) If input <> calibrated.csv, generate task for input and pass calibrated csv as parameter to the task.
+
+In print reads, get the calibrated csv from the parameter and perform further operation.
+
 Create haplotype caller task.

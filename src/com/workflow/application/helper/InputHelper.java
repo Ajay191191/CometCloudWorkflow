@@ -5,11 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.workflow.application.tasks.BaseRecalibratorTask;
+import com.workflow.application.tasks.HaplotypeCallerTask;
 import com.workflow.application.tasks.IndexPrepare;
 import com.workflow.application.tasks.IndexTask;
 import com.workflow.application.tasks.MapTask;
 import com.workflow.application.tasks.PrepareBaseRecalibrator;
-import com.workflow.application.tasks.PreparePrintReadsTask;
+import com.workflow.application.tasks.PrintReadsTask;
 import com.workflow.application.tasks.RealignerTargetCreatorTask;
 import com.workflow.application.tasks.ReduceTask;
 import com.workflow.application.tasks.Task;
@@ -25,6 +26,8 @@ public class InputHelper{
 	private HashMap <String,List>inputsHash;
 	private WorkflowTaskTuple tasktuple;
 	private String inputLocation;
+	private List data;
+	
 	
 	public HashMap<String, List> getInputsHash() {
 		return inputsHash;
@@ -50,6 +53,9 @@ public class InputHelper{
 	public void setInputFiles(List<FileProperties> inputFiles) {
 		this.inputFiles = inputFiles;
 	}
+	public Object getNthObjectFromList(int n){
+		return data.get(n);
+	}
 	public InputHelper(String method, FileProperties outputFile,List<FileProperties> inputFiles,WorkflowTaskTuple tasktuple) {
 		super();
 		this.method = method;
@@ -58,6 +64,11 @@ public class InputHelper{
 		this.tasktuple = tasktuple;
 		this.calculateInputsHash();
 	}
+	public InputHelper(List data, WorkflowTaskTuple tasktuple) {
+		this((String)data.get(0), (FileProperties)data.get(1), (List<FileProperties>)data.get(2),tasktuple);
+		this.data = data;
+	}
+	
 	public HashMap<String, List> calculateInputsHash() {
 		inputsHash = new HashMap<String, List>();
 		for (FileProperties fp:this.inputFiles){
@@ -90,8 +101,10 @@ public class InputHelper{
 			return new PrepareBaseRecalibrator();
 		}else if (this.method.equals(HelperConstants.BASERECALIBRATOR)) {
 			return new BaseRecalibratorTask();
-		}else if (this.method.equals(HelperConstants.PREPAREPRINTREADS)) {
-			return new PreparePrintReadsTask();
+		}else if (this.method.equals(HelperConstants.PRINTREADS)) {
+			return new PrintReadsTask();
+		}else if (this.method.equals(HelperConstants.HAPLOTYPECALLER)) {
+			return new HaplotypeCallerTask();
 		}
 		
 		return null;

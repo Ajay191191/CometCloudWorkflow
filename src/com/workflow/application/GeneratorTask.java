@@ -23,9 +23,12 @@ public class GeneratorTask extends GenerateTasksAbstract {
 	    }else if(method.equals(HelperConstants.REDUCE) || method.equals(HelperConstants.INDEX) || method.equals(HelperConstants.REALIGNERTARGETCREATOR)|| method.equals(HelperConstants.PREPAREBASERECALIBRATOR) || method.equals(HelperConstants.BASERECALIBRATOR)){
 	        HashMap <String,FileProperties>previousFiles=this.generatePreviousResultFiles(stageId, dependencies);
 	        taskObj=reduce(input,output,propertyFileValues,previousFiles);
-	    }else if(method.equals(HelperConstants.INDEX_PREPARE)){
+	    }else if(method.equals(HelperConstants.INDEX_PREPARE) || method.equals(HelperConstants.HAPLOTYPECALLER)){
 	        HashMap <String,FileProperties>previousFiles=this.generatePreviousResultFiles(stageId, dependencies);
 	        taskObj=createNtoNTasks(input,output,propertyFileValues,previousFiles);
+	    }else if(method.equals(HelperConstants.PRINTREADS)){
+	        HashMap <String,FileProperties>previousFiles=this.generatePreviousResultFiles(stageId, dependencies);
+	        taskObj=createTaskForPrintReads(input,output,propertyFileValues,previousFiles);
 	    }
 	    return taskObj;
 	}
@@ -108,11 +111,49 @@ public class GeneratorTask extends GenerateTasksAbstract {
 		double minTimeVal = Double.parseDouble(getProperty("minTime"));
 		double maxTimeVal = Double.parseDouble(getProperty("maxTime"));
 
-		List<FileProperties> inputs = new ArrayList();
 		for (String key : previousResults.keySet()) {
+			List<FileProperties> inputs = new ArrayList();
 			inputs.add(previousResults.get(key));
 			inputList.add(inputs);
 			taskParams.add(taskid, Arrays.asList("reduce",output, inputs));
+			taskRequirement.add("large"); // Requirement
+			minTime.add(minTimeVal);
+			maxTime.add(maxTimeVal);
+			inputList.add(inputs);
+			taskid++;
+		}
+		return new GenerateTasksObject(taskParams, taskRequirement, minTime,maxTime, inputList, null);
+	}
+	
+	public GenerateTasksObject createTaskForPrintReads(List<FileProperties> input, FileProperties output, String propertyFile,HashMap<String, FileProperties> previousResults){
+		
+		int taskid = 0;
+		List<Double> minTime = new ArrayList();
+		List<Double> maxTime = new ArrayList();
+		List<List> taskParams = new ArrayList();
+		List<String> taskRequirement = new ArrayList<String>();
+		List<List<FileProperties>> inputList = new ArrayList();
+		double minTimeVal = Double.parseDouble(getProperty("minTime"));
+		double maxTimeVal = Double.parseDouble(getProperty("maxTime"));
+
+		FileProperties calibratedCSVFile = null;
+		for (String key : previousResults.keySet()) {
+			FileProperties inputFile = previousResults.get(key);
+			if(inputFile.getName().contains("_calibration.csv")){
+				calibratedCSVFile = inputFile;
+				break;
+			}
+		}
+		
+		for (String key : previousResults.keySet()) {
+			List<FileProperties> inputs = new ArrayList();
+			FileProperties inputFile = previousResults.get(key);
+			if(inputFile.getName().contains("_calibration.csv")){
+				continue;
+			}
+			inputs.add(inputFile);
+			inputList.add(inputs);
+			taskParams.add(taskid, Arrays.asList("reduce",output, inputs,calibratedCSVFile));
 			taskRequirement.add("large"); // Requirement
 			minTime.add(minTimeVal);
 			maxTime.add(maxTimeVal);
