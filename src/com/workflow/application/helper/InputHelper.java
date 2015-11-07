@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.workflow.application.tasks.BaseRecalibratorTask;
 import com.workflow.application.tasks.IndexPrepare;
 import com.workflow.application.tasks.IndexTask;
 import com.workflow.application.tasks.MapTask;
 import com.workflow.application.tasks.PrepareBaseRecalibrator;
+import com.workflow.application.tasks.PreparePrintReadsTask;
 import com.workflow.application.tasks.RealignerTargetCreatorTask;
 import com.workflow.application.tasks.ReduceTask;
 import com.workflow.application.tasks.Task;
@@ -86,6 +88,10 @@ public class InputHelper{
 			return new RealignerTargetCreatorTask();
 		}else if (this.method.equals(HelperConstants.PREPAREBASERECALIBRATOR)) {
 			return new PrepareBaseRecalibrator();
+		}else if (this.method.equals(HelperConstants.BASERECALIBRATOR)) {
+			return new BaseRecalibratorTask();
+		}else if (this.method.equals(HelperConstants.PREPAREPRINTREADS)) {
+			return new PreparePrintReadsTask();
 		}
 		
 		return null;

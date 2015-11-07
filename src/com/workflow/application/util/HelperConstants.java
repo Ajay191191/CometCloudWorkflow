@@ -8,4 +8,6 @@ public class HelperConstants {
 	public static String INDEX="index";
 	public static String REALIGNERTARGETCREATOR = "RealignerTargetCreator";
 	public static String PREPAREBASERECALIBRATOR = "prepareBaseRecalibrator";
+	public static String BASERECALIBRATOR = "BaseRecalibrator";
+	public static String PREPAREPRINTREADS = "PreparePrintReads";
 }

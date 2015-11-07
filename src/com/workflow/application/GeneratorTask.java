@@ -20,16 +20,15 @@ public class GeneratorTask extends GenerateTasksAbstract {
 	    this.loadProperties(propertyFileValues);
 	    if(method.equals(HelperConstants.MAP)){
 	        taskObj=map(input,output,propertyFileValues);
-	    }else if(method.equals(HelperConstants.REDUCE)){
+	    }else if(method.equals(HelperConstants.REDUCE) || method.equals(HelperConstants.INDEX) || method.equals(HelperConstants.REALIGNERTARGETCREATOR)|| method.equals(HelperConstants.PREPAREBASERECALIBRATOR) || method.equals(HelperConstants.BASERECALIBRATOR)){
 	        HashMap <String,FileProperties>previousFiles=this.generatePreviousResultFiles(stageId, dependencies);
 	        taskObj=reduce(input,output,propertyFileValues,previousFiles);
-	    }else if(method.equals(HelperConstants.INDEX_PREPARE) || method.equals(HelperConstants.INDEX) || method.equals(HelperConstants.REALIGNERTARGETCREATOR)|| method.equals(HelperConstants.PREPAREBASERECALIBRATOR)){
+	    }else if(method.equals(HelperConstants.INDEX_PREPARE)){
 	        HashMap <String,FileProperties>previousFiles=this.generatePreviousResultFiles(stageId, dependencies);
-	        taskObj=reduce(input,output,propertyFileValues,previousFiles);
+	        taskObj=createNtoNTasks(input,output,propertyFileValues,previousFiles);
 	    }
 	    return taskObj;
 	}
-	
 	
 	public GenerateTasksObject map(List<FileProperties> input, FileProperties output, String propertyFile){
 	    int taskid=0;
@@ -98,7 +97,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 		return new GenerateTasksObject(taskParams, taskRequirement, minTime,maxTime, inputList, null);
 	}
 
-	/*public GenerateTasksObject indexPrepare(List<FileProperties> input, FileProperties output, String propertyFile,HashMap<String, FileProperties> previousResults){
+	public GenerateTasksObject createNtoNTasks(List<FileProperties> input, FileProperties output, String propertyFile,HashMap<String, FileProperties> previousResults){
 		
 		int taskid = 0;
 		List<Double> minTime = new ArrayList();
@@ -121,5 +120,5 @@ public class GeneratorTask extends GenerateTasksAbstract {
 			taskid++;
 		}
 		return new GenerateTasksObject(taskParams, taskRequirement, minTime,maxTime, inputList, null);
-	}*/
+	}
 }

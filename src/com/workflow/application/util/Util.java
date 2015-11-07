@@ -74,7 +74,7 @@ public class Util {
 		command.add("index");
 		return command;
 	}
-	
+
 	public static void writeShAndStartProcess(List<String> commands,String workingDir, double random,String nameExtension){
 		StringBuilder builder = new StringBuilder();
 		for(String command:commands){
@@ -133,6 +133,84 @@ public class Util {
 		command.add("1");
 		command.add("-o");
 		command.add(outputBam);
+		
+		return command;
+	}
+	
+
+	public static List<String> getBAMMergeCommand(String outputBAM){
+		List<String> command = new ArrayList<String>();
+		command.add("/cac/u01/jz362/Workflow/samtools/samtools-1.2/samtools");
+		command.add("merge");
+		command.add(outputBAM);
+		return command;
+	}
+	
+	public static List<String> getBaseRecalibratorCommand(int numberOfThreads,String inputBam,String outputFile){
+		List<String> command = new ArrayList<String>();
+		//java -jar $GATKJARDIR/GenomeAnalysisTK.jar -T BaseRecalibrator -nct $NUMCPUTHREADS -R $REFERENCEDIR 
+		//-I $REALIGNEDBAM -o $BASECALIBRATEDCSV -cov ReadGroupCovariate -cov QualityScoreCovariate -cov CycleCovariate -cov 
+		//ContextCovariate -knownSites $DBSNFP135VCF
+		command.add("-T");
+		command.add("BaseRecalibrator");
+		command.add("-nct");
+		command.add(numberOfThreads+"");
+		command.add("-R");
+		command.add("/cac/u01/jz362/Workflow/Reference/hg19.fasta");
+		command.add("-I");
+		command.add(inputBam);
+		command.add("-o");
+		command.add(outputFile);
+		command.add("-cov");
+		command.add("ReadGroupCovariate");
+		command.add("-cov");
+		command.add("CycleCovariate");
+		command.add("-cov");
+		command.add("ContextCovariate");
+		command.add("-knownSites");
+		command.add("/cac/u01/jz362/Workflow/dbsnp/dbsnp_137.hg19.vcf");
+		
+		return command;
+	}
+	
+	public static List<String> getPrintReadsCommand(int numberOfThreads,String inputBam,String outputBAM,String calibratedCSV){
+		//java -jar $GATKJARDIR/GenomeAnalysisTK.jar -T PrintReads -nct $NUMCPUTHREADS -baq 
+		//RECALCULATE -baqGOP 30 -R $REFERENCEDIR -I $REALIGNEDBAM -BQSR $BASECALIBRATEDCSV -o $RECALIBRATEDBAM
+		List<String> command = new ArrayList<String>();
+		
+		command.add("-T");
+		command.add("PrintReads");
+		command.add("-nct");
+		command.add(numberOfThreads+"");
+		command.add("-R");
+		command.add("/cac/u01/jz362/Workflow/Reference/hg19.fasta");
+		command.add("-I");
+		command.add(inputBam);
+		command.add("-o");
+		command.add(outputBAM);
+		command.add("-baq");
+		command.add("RECALCULATE");
+		command.add("-baqGOP");
+		command.add("30");
+		command.add("-BQSR");
+		command.add(calibratedCSV);
+		
+		return command;
+	}
+	
+	public static List<String> getSplitBAMByChromosomeCommand(String chr,String inputBAM,String outputBAM){
+		List<String> command = new ArrayList<String>();
+
+		//samtools view -b in.bam chr1 > in_chr1.bam
+		
+		command.add("/cac/u01/jz362/Workflow/samtools/samtools-1.2/samtools");
+		command.add("view");
+		command.add("-b");
+		command.add(inputBAM);
+		command.add(chr);
+		command.add(">");
+		command.add(outputBAM);
+		
 		
 		return command;
 	}

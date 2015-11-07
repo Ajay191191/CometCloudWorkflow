@@ -50,9 +50,22 @@
   </stage>
   <stage id="S6" type="Results" value="jz362@dell01:/cac/u01/jz362/cometcloud/output/" zone="zoneA" site="clusterTest" constraint=""/>
   
+  <stage id="S7" type="AppGenerateClass" value="com.workflow.application.GeneratorTask" method="BaseRecalibrator"/>
+  <stage id="S7" type="PropertyFile" value="./sample.properties"/>
+  <stage id="S7" type="Application" value="Workflow"/>
+  <stage id="S7" type="InputData">
+	<InputData value="jz362@dell01:/cac/u01/jz362/cometcloud/inputs/" zone="zoneA" site="clusterTest"  constraint=""/>    
+  </stage>
+  <stage id="S7" type="Results" value="jz362@dell01:/cac/u01/jz362/cometcloud/output/" zone="zoneA" site="clusterTest" constraint=""/>
   
+  <stage id="S8" type="AppGenerateClass" value="com.workflow.application.GeneratorTask" method="PreparePrintReads"/>
+  <stage id="S8" type="PropertyFile" value="./sample.properties"/>
+  <stage id="S8" type="Application" value="Workflow"/>
+  <stage id="S8" type="InputData">
+	<InputData value="jz362@dell01:/cac/u01/jz362/cometcloud/inputs/" zone="zoneA" site="clusterTest"  constraint=""/>    
+  </stage>
+  <stage id="S8" type="Results" value="jz362@dell01:/cac/u01/jz362/cometcloud/output/" zone="zoneA" site="clusterTest" constraint=""/>
   
-
 </stages>
 <objectives>
      <objective id="S1" type="DeadlineLocalityAware" value="1377" />
@@ -60,6 +73,9 @@
      <objective id="S3" type="DeadlineLocalityAware" value="5776" />
      <objective id="S4" type="DeadlineLocalityAware" value="5776" />
      <objective id="S5" type="DeadlineLocalityAware" value="5776" />
+     <objective id="S6" type="DeadlineLocalityAware" value="5776" />
+     <objective id="S7" type="DeadlineLocalityAware" value="5776" />
+     <objective id="S8" type="DeadlineLocalityAware" value="5776" />
 </objectives>
 <transitions>
         <transition from="S1" to="S2" blocking="false"/>
@@ -67,5 +83,8 @@
         <transition from="S3" to="S4" blocking="false"/>
         <transition from="S4" to="S5" blocking="false"/>
         <transition from="S5" to="S6" blocking="true"/>
+        <transition from="S6" to="S7" blocking="false"/>
+        <transition from="S6" to="S7" blocking="false"/>
+        <transition from="S7" to="S8" blocking="false"/>
 </transitions>
 </xflow>

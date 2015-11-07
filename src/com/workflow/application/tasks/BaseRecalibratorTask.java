@@ -9,26 +9,29 @@ import com.workflow.application.util.Util;
 
 import tassl.application.cometcloud.FileProperties;
 
-public class PrepareBaseRecalibrator implements Task {
+public class BaseRecalibratorTask implements Task {
 
 	@Override
 	public Object[] performTask(InputHelper helper, WorkerTask task) {
 
+		
 		String workingDir = System.getProperty("WorkingDir");
-		List<String> outfiles=new ArrayList<>();
-		String outputBAM = Math.random()*1000 + "_"+System.getProperty("Name")+".bam";
-		String stagingLocation = helper.getInputLocation();
-		System.out.println("Location " + stagingLocation);
-		List<String> bamMergeCommand = Util.getBAMMergeCommand(outputBAM);
+		List<String> inputFiles=new ArrayList();
+		List<String> outputFiles=new ArrayList();
 		for(String location: helper.getInputsHash().keySet()){
 			List<String> files = helper.getInputsHash().get(location);
 			for(String inputFile:files){
-				bamMergeCommand.add(inputFile);
+				inputFiles.add(inputFile);
 			}
 		}
-		Util.runProcessWithListOfCommands(bamMergeCommand);
-		outfiles.add(outputBAM);
-		List<FileProperties> resultFiles=task.uploadResults(outfiles,workingDir, helper.getOutputFile());
+		String outputFile = Math.random()*1000 + "_"+System.getProperty("Name")+"_calibration.csv";
+		List<FileProperties> resultFiles=task.uploadResults(outputFiles,workingDir, helper.getOutputFile());
+		if(inputFiles.size()>1)
+			return new Object[]{"FAIL",resultFiles};
+		
+		List<String> baseRecalibratorCommand = Util.getBaseRecalibratorCommand(20, inputFiles.get(0), outputFile);
+		Util.runProcessWithListOfCommands(baseRecalibratorCommand);
+		outputFiles.add(outputFile);
 		return new Object[]{"OK",resultFiles};
 	
 	}
