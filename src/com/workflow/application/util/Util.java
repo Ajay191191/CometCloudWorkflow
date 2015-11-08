@@ -44,11 +44,13 @@ public class Util {
 		return command;
 	}
 	
-	public static List<String> getContigsListCommand(String directoryName){
+	public static List<String> getContigsListCommand(String inputBam){
 		//~/Workflow/samtools/samtools-1.2/samtools view -H 542.0115432785603_clusterTest.bam | grep "^@SQ" | awk -F":" '{print $2}' | awk '{print $1}' > contigs.txt
 		List<String> command = new ArrayList<String>();
-		command.add("mkdir "+directoryName+";");
 		command.add("/cac/u01/jz362/Workflow/samtools/samtools-1.2/samtools");
+		command.add("view");
+		command.add("-H");
+		command.add(inputBam);
 		command.add("|");
 		command.add("grep \"^@SQ\"");
 		command.add("|");
@@ -209,12 +211,18 @@ public class Util {
 		List<String> command = new ArrayList<String>();
 
 		//samtools view -b in.bam chr1 > in_chr1.bam
-		
+		//samtools view -b -f 4 in.bam > unmapped.bam
+
 		command.add("/cac/u01/jz362/Workflow/samtools/samtools-1.2/samtools");
 		command.add("view");
 		command.add("-b");
 		command.add(inputBAM);
-		command.add(chr);
+		if(!chr.equalsIgnoreCase("unmapped"))
+			command.add(chr);
+		else{
+			command.add("-f");
+			command.add("4");
+		}
 		command.add(">");
 		command.add(outputBAM);
 		

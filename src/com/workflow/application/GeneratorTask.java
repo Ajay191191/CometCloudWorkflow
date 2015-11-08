@@ -19,21 +19,21 @@ public class GeneratorTask extends GenerateTasksAbstract {
 	    GenerateTasksObject taskObj=null;
 	    this.loadProperties(propertyFileValues);
 	    if(method.equals(HelperConstants.MAP)){
-	        taskObj=map(input,output,propertyFileValues);
+	        taskObj=map(input,output,propertyFileValues,method);
 	    }else if(method.equals(HelperConstants.REDUCE) || method.equals(HelperConstants.INDEX) || method.equals(HelperConstants.REALIGNERTARGETCREATOR)|| method.equals(HelperConstants.PREPAREBASERECALIBRATOR) || method.equals(HelperConstants.BASERECALIBRATOR)){
 	        HashMap <String,FileProperties>previousFiles=this.generatePreviousResultFiles(stageId, dependencies);
-	        taskObj=reduce(input,output,propertyFileValues,previousFiles);
+	        taskObj=reduce(input,output,propertyFileValues,previousFiles,method);
 	    }else if(method.equals(HelperConstants.INDEX_PREPARE) || method.equals(HelperConstants.HAPLOTYPECALLER)){
 	        HashMap <String,FileProperties>previousFiles=this.generatePreviousResultFiles(stageId, dependencies);
-	        taskObj=createNtoNTasks(input,output,propertyFileValues,previousFiles);
+	        taskObj=createNtoNTasks(input,output,propertyFileValues,previousFiles,method);
 	    }else if(method.equals(HelperConstants.PRINTREADS)){
 	        HashMap <String,FileProperties>previousFiles=this.generatePreviousResultFiles(stageId, dependencies);
-	        taskObj=createTaskForPrintReads(input,output,propertyFileValues,previousFiles);
+	        taskObj=createTaskForPrintReads(input,output,propertyFileValues,previousFiles,method);
 	    }
 	    return taskObj;
 	}
 	
-	public GenerateTasksObject map(List<FileProperties> input, FileProperties output, String propertyFile){
+	public GenerateTasksObject map(List<FileProperties> input, FileProperties output, String propertyFile, String method){
 	    int taskid=0;
 
 	    List <Double> minTime= new ArrayList<Double>();
@@ -61,7 +61,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 	                inputs.add(new FileProperties(fileParts[1],inputS,Double.parseDouble(fileParts[0]),inputFP.getZone(), inputFP.getSitename(), inputFP.getConstraints()));
 	                inputs.add(new FileProperties(fileParts[1].replace("_1_", "_2_"),inputS,Double.parseDouble(fileParts[0]),inputFP.getZone(), inputFP.getSitename(), inputFP.getConstraints()));
 	                double taskDuration=minTimeVal + (Math.random() * (maxTimeVal - minTimeVal));
-	                taskParams.add(taskid, Arrays.asList("map",output,inputs,taskDuration));
+	                taskParams.add(taskid, Arrays.asList(method,output,inputs,taskDuration));
 	                taskRequirement.add("large");
 	                minTime.add(minTimeVal);
 	                maxTime.add(maxTimeVal);
@@ -75,7 +75,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 	    return new GenerateTasksObject(taskParams,taskRequirement, minTime, maxTime,inputList,null);
 	}
 	
-	public GenerateTasksObject reduce(List<FileProperties> input,FileProperties output, String propertyFile,HashMap<String, FileProperties> previousResults) {
+	public GenerateTasksObject reduce(List<FileProperties> input,FileProperties output, String propertyFile,HashMap<String, FileProperties> previousResults,String method) {
 		
 		int taskid = 0;
 		List<Double> minTime = new ArrayList();
@@ -91,7 +91,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 		inputList.add(inputs);
 		double minTimeVal = Double.parseDouble(getProperty("minTime"));
 		double maxTimeVal = Double.parseDouble(getProperty("maxTime"));
-		taskParams.add(taskid, Arrays.asList("reduce",output, inputs));
+		taskParams.add(taskid, Arrays.asList(method,output, inputs));
 		taskRequirement.add("large"); // Requirement
 		minTime.add(minTimeVal);
 		maxTime.add(maxTimeVal);
@@ -100,7 +100,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 		return new GenerateTasksObject(taskParams, taskRequirement, minTime,maxTime, inputList, null);
 	}
 
-	public GenerateTasksObject createNtoNTasks(List<FileProperties> input, FileProperties output, String propertyFile,HashMap<String, FileProperties> previousResults){
+	public GenerateTasksObject createNtoNTasks(List<FileProperties> input, FileProperties output, String propertyFile,HashMap<String, FileProperties> previousResults,String method){
 		
 		int taskid = 0;
 		List<Double> minTime = new ArrayList();
@@ -115,7 +115,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 			List<FileProperties> inputs = new ArrayList();
 			inputs.add(previousResults.get(key));
 			inputList.add(inputs);
-			taskParams.add(taskid, Arrays.asList("reduce",output, inputs));
+			taskParams.add(taskid, Arrays.asList(method,output, inputs));
 			taskRequirement.add("large"); // Requirement
 			minTime.add(minTimeVal);
 			maxTime.add(maxTimeVal);
@@ -125,7 +125,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 		return new GenerateTasksObject(taskParams, taskRequirement, minTime,maxTime, inputList, null);
 	}
 	
-	public GenerateTasksObject createTaskForPrintReads(List<FileProperties> input, FileProperties output, String propertyFile,HashMap<String, FileProperties> previousResults){
+	public GenerateTasksObject createTaskForPrintReads(List<FileProperties> input, FileProperties output, String propertyFile,HashMap<String, FileProperties> previousResults,String method){
 		
 		int taskid = 0;
 		List<Double> minTime = new ArrayList();
@@ -153,7 +153,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 			}
 			inputs.add(inputFile);
 			inputList.add(inputs);
-			taskParams.add(taskid, Arrays.asList("reduce",output, inputs,calibratedCSVFile));
+			taskParams.add(taskid, Arrays.asList(method,output, inputs,calibratedCSVFile));
 			taskRequirement.add("large"); // Requirement
 			minTime.add(minTimeVal);
 			maxTime.add(maxTimeVal);
