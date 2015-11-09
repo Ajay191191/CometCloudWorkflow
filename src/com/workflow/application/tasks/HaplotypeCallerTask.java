@@ -1,5 +1,6 @@
 package com.workflow.application.tasks;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,18 +19,20 @@ public class HaplotypeCallerTask implements Task {
 		List<String> inputFiles=new ArrayList();
 		List<String> outputFiles=new ArrayList();
 		String outputvcf = Math.random()*1000+"_"+System.getProperty("Name")+ "_index.sh";
+		String stagingLocation = helper.getInputLocation();
 		
 		for(String location: helper.getInputsHash().keySet()){
 			List<String> files = helper.getInputsHash().get(location);
 			for(String inputFile:files){
-				inputFiles.add(inputFile);
+				inputFiles.add(stagingLocation+File.separator + inputFile);
 			}
 		}
-		List<FileProperties> resultFiles=task.uploadResults(outputFiles,workingDir, helper.getOutputFile());
+		List<FileProperties> resultFiles=null;
 		if(inputFiles.size()>1){
 			return new Object[]{"FAIL",resultFiles};
 		}
-		List<String> haplotypeCallerCommand = Util.getHaplotypeCallerCommand(20, inputFiles.get(0), outputvcf);
+		resultFiles=task.uploadResults(outputFiles,workingDir, helper.getOutputFile());
+		List<String> haplotypeCallerCommand = Util.getHaplotypeCallerCommand( inputFiles.get(0), workingDir + File.separator +outputvcf);
 		Util.runProcessWithListOfCommands(haplotypeCallerCommand);
 		outputFiles.add(outputvcf);
 		

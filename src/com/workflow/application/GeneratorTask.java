@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.workflow.application.tasks.IndexPrepare;
 import com.workflow.application.util.HelperConstants;
 
 import tassl.application.cometcloud.FileProperties;
@@ -20,10 +23,11 @@ public class GeneratorTask extends GenerateTasksAbstract {
 	    this.loadProperties(propertyFileValues);
 	    if(method.equals(HelperConstants.MAP)){
 	        taskObj=map(input,output,propertyFileValues,method);
-	    }else if(method.equals(HelperConstants.REDUCE) || method.equals(HelperConstants.INDEX) || method.equals(HelperConstants.REALIGNERTARGETCREATOR)|| method.equals(HelperConstants.PREPAREBASERECALIBRATOR) || method.equals(HelperConstants.BASERECALIBRATOR)){
+	    }else if(method.equals(HelperConstants.REDUCE) 
+	    		|| method.equals(HelperConstants.PREPAREBASERECALIBRATOR) || method.equals(HelperConstants.BASERECALIBRATOR)){
 	        HashMap <String,FileProperties>previousFiles=this.generatePreviousResultFiles(stageId, dependencies);
 	        taskObj=reduce(input,output,propertyFileValues,previousFiles,method);
-	    }else if(method.equals(HelperConstants.INDEX_PREPARE) || method.equals(HelperConstants.HAPLOTYPECALLER)){
+	    }else if(method.equals(HelperConstants.INDEX_PREPARE) || method.equals(HelperConstants.REALIGNERTARGETCREATOR) || method.equals(HelperConstants.HAPLOTYPECALLER)|| method.equals(HelperConstants.INDEX) ){
 	        HashMap <String,FileProperties>previousFiles=this.generatePreviousResultFiles(stageId, dependencies);
 	        taskObj=createNtoNTasks(input,output,propertyFileValues,previousFiles,method);
 	    }else if(method.equals(HelperConstants.PRINTREADS)){
@@ -110,7 +114,10 @@ public class GeneratorTask extends GenerateTasksAbstract {
 		List<List<FileProperties>> inputList = new ArrayList();
 		double minTimeVal = Double.parseDouble(getProperty("minTime"));
 		double maxTimeVal = Double.parseDouble(getProperty("maxTime"));
-
+		
+		
+		Logger.getLogger(GeneratorTask.class.getName()).log(Level.INFO,"Previous Results " + previousResults.keySet());
+			
 		for (String key : previousResults.keySet()) {
 			List<FileProperties> inputs = new ArrayList();
 			inputs.add(previousResults.get(key));

@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.workflow.application.tasks.IndexPrepare;
 import com.workflow.application.tasks.worker.ContigSplitBAMWorker;
 import com.workflow.application.tasks.worker.PoolFactory;
 import com.workflow.application.tasks.worker.Worker;
@@ -104,21 +105,25 @@ public class Util {
 		runProcessWithShell(workingDir, shFile);
 	}
 	
-	public static List<String> getRealignerTargetCreatorCommand(int numberOfThreads,String inputBam,String outputFile){
+	public static List<String> getRealignerTargetCreatorCommand(String inputBam,String outputFile){
 		List<String> command = new ArrayList<>();
 		
 		//java -jar $GATKJARDIR/GenomeAnalysisTK.jar -T RealignerTargetCreator -nt $NUMDATATHREADS -R 
 		//$REFERENCEDIR -I $REORDERBAM -o $OUTPUTINTERVALS --defaultBaseQualities 1
 
+		command.add("java");
+		command.add("-jar");
+		command.add("/cac/u01/jz362/Workflow/gatk/GenomeAnalysisTK.jar");
+		
 		command.add("-T");
 		command.add("RealignerTargetCreator");
 		command.add("-nt");
-		command.add(numberOfThreads+"");
+		command.add(HelperConstants.numberOfThreads+"");
 		command.add("-R");
 		command.add("/cac/u01/jz362/Workflow/Reference/hg19.fasta");
 		command.add("-I");
 		command.add(inputBam);
-		command.add("-defaultBaseQualities");
+		command.add("--defaultBaseQualities");
 		command.add("1");
 		command.add("-o");
 		command.add(outputFile);
@@ -132,6 +137,11 @@ public class Util {
 		//java -Djava.io.tmpdir=$TEMPDIR -jar $GATKJARDIR/GenomeAnalysisTK.jar -T IndelRealigner -R $REFERENCEDIR -I $REORDERBAM 
 		//-targetIntervals $OUTPUTINTERVALS -o $REALIGNEDBAM -LOD 5 --defaultBaseQualities 1
 
+		command.add("java");
+		command.add("-jar");
+		command.add("/cac/u01/jz362/Workflow/gatk/GenomeAnalysisTK.jar");
+		
+		
 		command.add("-T");
 		command.add("IndelRealigner");
 		command.add("-R");
@@ -155,7 +165,7 @@ public class Util {
 		return command;
 	}
 	
-	public static List<String> getBaseRecalibratorCommand(int numberOfThreads,String inputBam,String outputFile){
+	public static List<String> getBaseRecalibratorCommand(String inputBam,String outputFile){
 		List<String> command = new ArrayList<String>();
 		//java -jar $GATKJARDIR/GenomeAnalysisTK.jar -T BaseRecalibrator -nct $NUMCPUTHREADS -R $REFERENCEDIR 
 		//-I $REALIGNEDBAM -o $BASECALIBRATEDCSV -cov ReadGroupCovariate -cov QualityScoreCovariate -cov CycleCovariate -cov 
@@ -163,7 +173,7 @@ public class Util {
 		command.add("-T");
 		command.add("BaseRecalibrator");
 		command.add("-nct");
-		command.add(numberOfThreads+"");
+		command.add(HelperConstants.numberOfThreads+"");
 		command.add("-R");
 		command.add("/cac/u01/jz362/Workflow/Reference/hg19.fasta");
 		command.add("-I");
@@ -182,7 +192,7 @@ public class Util {
 		return command;
 	}
 	
-	public static List<String> getPrintReadsCommand(int numberOfThreads,String inputBam,String outputBAM,String calibratedCSV){
+	public static List<String> getPrintReadsCommand(String inputBam,String outputBAM,String calibratedCSV){
 		//java -jar $GATKJARDIR/GenomeAnalysisTK.jar -T PrintReads -nct $NUMCPUTHREADS -baq 
 		//RECALCULATE -baqGOP 30 -R $REFERENCEDIR -I $REALIGNEDBAM -BQSR $BASECALIBRATEDCSV -o $RECALIBRATEDBAM
 		List<String> command = new ArrayList<String>();
@@ -190,7 +200,7 @@ public class Util {
 		command.add("-T");
 		command.add("PrintReads");
 		command.add("-nct");
-		command.add(numberOfThreads+"");
+		command.add(HelperConstants.numberOfThreads+"");
 		command.add("-R");
 		command.add("/cac/u01/jz362/Workflow/Reference/hg19.fasta");
 		command.add("-I");
@@ -230,7 +240,7 @@ public class Util {
 		return command;
 	}
 	
-	public static List<String> getHaplotypeCallerCommand(int numberOfThreads,String inputBam,String outputVCF){
+	public static List<String> getHaplotypeCallerCommand(String inputBam,String outputVCF){
 		//-T HaplotypeCaller -nct $NUMCPUTHREADS -R $REFERENCEDIR -I $RECALIBRATEDBAM -o $OUTPUTVCF -D $DBSNFP135VCF 
 		//-A AlleleBalance -A Coverage -A HomopolymerRun -A FisherStrand -A HaplotypeScore -A HardyWeinberg -A ReadPosRankSumTest 
 		//-A QualByDepth -A MappingQualityRankSumTest -A VariantType -A MappingQualityZero -minPruning 10 -stand_call_conf 30.0 -stand_emit_conf 10.0
@@ -239,7 +249,7 @@ public class Util {
 		command.add("-T");
 		command.add("HaplotypeCaller");
 		command.add("-nct");
-		command.add(numberOfThreads+"");
+		command.add(HelperConstants.numberOfThreads+"");
 		command.add("-R");
 		command.add("/cac/u01/jz362/Workflow/Reference/hg19.fasta");
 		command.add("-I");
@@ -287,6 +297,8 @@ public class Util {
 	
 	public static void runProcessWithListOfCommands(List<String> command){
 		ProcessBuilder pb = new ProcessBuilder(command);
+		Logger.getLogger(Util.class.getName()).log(Level.INFO,"command: " + command);
+
 		runProcess(pb);
 	}
 

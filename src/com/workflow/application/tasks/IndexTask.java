@@ -1,5 +1,6 @@
 package com.workflow.application.tasks;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,11 +19,14 @@ public class IndexTask implements Task {
 		List<String> indexCommand = Util.getIndexCommand();
 		List<String> inputFiles=new ArrayList();
 		List<String> outputFiles=new ArrayList();
+		String stagingLocation = helper.getInputLocation();
+		
+		
 		for(String location: helper.getInputsHash().keySet()){
 			List<String> files = helper.getInputsHash().get(location);
 			for(String inputFile:files){
-				inputFiles.add(inputFile);
-				outputFiles.add(inputFile+".bai");
+				inputFiles.add( inputFile);
+				outputFiles.add(new File(inputFile).getName());	
 			}
 		}
 		indexCommand.addAll(inputFiles);

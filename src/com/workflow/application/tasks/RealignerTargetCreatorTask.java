@@ -1,5 +1,6 @@
 package com.workflow.application.tasks;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,10 +22,11 @@ public class RealignerTargetCreatorTask implements Task {
 		String workingDir = System.getProperty("WorkingDir");
 		List<String> inputFiles=new ArrayList();
 		List<String> outputFiles=new ArrayList();
+		String stagingLocation = helper.getInputLocation();
 		for(String location: helper.getInputsHash().keySet()){
 			List<String> files = helper.getInputsHash().get(location);
 			for(String inputFile:files){
-				inputFiles.add(inputFile);
+				inputFiles.add(stagingLocation + File.separator + inputFile);
 			}
 		}
 		
@@ -35,11 +37,13 @@ public class RealignerTargetCreatorTask implements Task {
 		String outputBam = randomString+"_output.intervals";
 		
 		
-		List<String> realignerTargetCreatorCommand = Util.getRealignerTargetCreatorCommand(20, inputFiles.get(0), intervalsFile);
-		CommandLineGATK.main(realignerTargetCreatorCommand.toArray(new String[0]));
-
-		List<String> indelRealignerCommand = Util.getIndelRealignerCommand(inputFiles.get(0), intervalsFile, outputBam);
-		CommandLineGATK.main(indelRealignerCommand.toArray(new String[0]));
+		List<String> realignerTargetCreatorCommand = Util.getRealignerTargetCreatorCommand( inputFiles.get(0), workingDir + File.separator +intervalsFile);
+//		CommandLineGATK.main(realignerTargetCreatorCommand.toArray(new String[0]));
+		Util.runProcessWithListOfCommands(realignerTargetCreatorCommand);
+		
+		List<String> indelRealignerCommand = Util.getIndelRealignerCommand(inputFiles.get(0), intervalsFile, workingDir + File.separator +outputBam);
+//		CommandLineGATK.main(indelRealignerCommand.toArray(new String[0]));
+		Util.runProcessWithListOfCommands(indelRealignerCommand);
 		
 		outputFiles.add(outputBam);
 		List<FileProperties> resultFiles=task.uploadResults(outputFiles,workingDir, helper.getOutputFile());

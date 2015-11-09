@@ -37,7 +37,9 @@ public class ContigSplitBAMWorker implements Worker<String>{
 	@Override
 	public String call() throws Exception {
 		List<String> splitBAMByChromosomeCommand = Util.getSplitBAMByChromosomeCommand(chr, inputBAM, outputBAM);
-		Util.runProcessWithListOfCommands(splitBAMByChromosomeCommand);
+//		Util.runProcessWithListOfCommands(splitBAMByChromosomeCommand);
+		Util.writeShAndStartProcess(splitBAMByChromosomeCommand, System.getProperty("WorkingDir"), Math.random()*1000, "_splitBAM.sh");
+		
 		return outputBAM;
 	}
 	

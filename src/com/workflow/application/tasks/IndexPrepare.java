@@ -41,7 +41,7 @@ public class IndexPrepare implements Task {
 			}
 		}
 		
-		List<FileProperties> resultFiles=task.uploadResults(outfiles, workingDir, helper.getOutputFile());
+		List<FileProperties> resultFiles=null;
 		if(inputFiles.size()>1)
 			return new Object[]{"FAIL",resultFiles};
 		String stagingLocation = helper.getInputLocation();
@@ -61,8 +61,9 @@ public class IndexPrepare implements Task {
 				outfiles.add(str);
 			}
 		}*/
-		outfiles.addAll(Util.splitBAMbyChromosome(new File(outputContigsFile), inputFiles.get(0)));
+		outfiles.addAll(Util.splitBAMbyChromosome(new File(workingDir + File.separator +outputContigsFile),stagingLocation +  inputFiles.get(0)));
 		
+		resultFiles=task.uploadResults(outfiles, workingDir, helper.getOutputFile());
     	return new Object[]{"OK",resultFiles};
 	}
 	
