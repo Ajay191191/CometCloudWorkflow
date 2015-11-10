@@ -21,6 +21,8 @@ public class GeneratorTask extends GenerateTasksAbstract {
 	public GenerateTasksObject createTasks(String stageId, List<FileProperties> input, FileProperties output,String propertyFileValues, List dependencies, String method){
 	    GenerateTasksObject taskObj=null;
 	    this.loadProperties(propertyFileValues);
+	    Logger.getLogger(GeneratorTask.class.getName()).log(Level.INFO,"method " + method);
+		  
 	    if(method.equals(HelperConstants.MAP)){
 	        taskObj=map(input,output,propertyFileValues,method);
 	    }else if(method.equals(HelperConstants.REDUCE) 
@@ -31,6 +33,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 	        HashMap <String,FileProperties>previousFiles=this.generatePreviousResultFiles(stageId, dependencies);
 	        taskObj=createNtoNTasks(input,output,propertyFileValues,previousFiles,method);
 	    }else if(method.equals(HelperConstants.PRINTREADS)){
+	    	Logger.getLogger(GeneratorTask.class.getName()).log(Level.INFO,"In condition method " + method);
 	        HashMap <String,FileProperties>previousFiles=this.generatePreviousResultFiles(stageId, dependencies);
 	        taskObj=createTaskForPrintReads(input,output,propertyFileValues,previousFiles,method);
 	    }
@@ -63,7 +66,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 	                if(fileParts[1].contains("_2_"))
 	                	continue;
 	                inputs.add(new FileProperties(fileParts[1],inputS,Double.parseDouble(fileParts[0]),inputFP.getZone(), inputFP.getSitename(), inputFP.getConstraints()));
-	                inputs.add(new FileProperties(fileParts[1].replace("_1_", "_2_"),inputS,Double.parseDouble(fileParts[0]),inputFP.getZone(), inputFP.getSitename(), inputFP.getConstraints()));
+//	                inputs.add(new FileProperties(fileParts[1].replace("_1_", "_2_"),inputS,Double.parseDouble(fileParts[0]),inputFP.getZone(), inputFP.getSitename(), inputFP.getConstraints()));
 	                double taskDuration=minTimeVal + (Math.random() * (maxTimeVal - minTimeVal));
 	                taskParams.add(taskid, Arrays.asList(method,output,inputs,taskDuration));
 	                taskRequirement.add("large");
@@ -134,6 +137,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 	
 	public GenerateTasksObject createTaskForPrintReads(List<FileProperties> input, FileProperties output, String propertyFile,HashMap<String, FileProperties> previousResults,String method){
 		
+		Logger.getLogger(GeneratorTask.class.getName()).log(Level.INFO,"In method method " + method);
 		int taskid = 0;
 		List<Double> minTime = new ArrayList();
 		List<Double> maxTime = new ArrayList();
@@ -167,6 +171,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 			inputList.add(inputs);
 			taskid++;
 		}
+		Logger.getLogger(GeneratorTask.class.getName()).log(Level.INFO,"return method " + method);
 		return new GenerateTasksObject(taskParams, taskRequirement, minTime,maxTime, inputList, null);
 	}
 }

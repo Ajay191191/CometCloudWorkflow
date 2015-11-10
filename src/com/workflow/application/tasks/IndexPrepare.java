@@ -38,6 +38,7 @@ public class IndexPrepare implements Task {
 			List<String> files = helper.getInputsHash().get(location);
 			for(String inputFile:files){
 				inputFiles.add(inputFile);
+				outfiles.add(new File(inputFile).getName());
 			}
 		}
 		
@@ -61,7 +62,7 @@ public class IndexPrepare implements Task {
 				outfiles.add(str);
 			}
 		}*/
-		outfiles.addAll(Util.splitBAMbyChromosome(new File(workingDir + File.separator +outputContigsFile),stagingLocation +  inputFiles.get(0)));
+//		outfiles.addAll(Util.splitBAMbyChromosome(new File(workingDir + File.separator +outputContigsFile),stagingLocation +  inputFiles.get(0)));
 		
 		resultFiles=task.uploadResults(outfiles, workingDir, helper.getOutputFile());
     	return new Object[]{"OK",resultFiles};

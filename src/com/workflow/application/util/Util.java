@@ -148,7 +148,9 @@ public class Util {
 		command.add("/cac/u01/jz362/Workflow/Reference/hg19.fasta");
 		command.add("-I");
 		command.add(inputBam);
-		command.add("-defaultBaseQualities");
+		command.add("-targetIntervals");
+		command.add(inputIntervals);
+		command.add("--defaultBaseQualities");
 		command.add("1");
 		command.add("-o");
 		command.add(outputBam);
@@ -170,6 +172,12 @@ public class Util {
 		//java -jar $GATKJARDIR/GenomeAnalysisTK.jar -T BaseRecalibrator -nct $NUMCPUTHREADS -R $REFERENCEDIR 
 		//-I $REALIGNEDBAM -o $BASECALIBRATEDCSV -cov ReadGroupCovariate -cov QualityScoreCovariate -cov CycleCovariate -cov 
 		//ContextCovariate -knownSites $DBSNFP135VCF
+		
+		command.add("java");
+		command.add("-jar");
+		command.add("/cac/u01/jz362/Workflow/gatk/GenomeAnalysisTK.jar");
+		
+		
 		command.add("-T");
 		command.add("BaseRecalibrator");
 		command.add("-nct");
@@ -196,6 +204,11 @@ public class Util {
 		//java -jar $GATKJARDIR/GenomeAnalysisTK.jar -T PrintReads -nct $NUMCPUTHREADS -baq 
 		//RECALCULATE -baqGOP 30 -R $REFERENCEDIR -I $REALIGNEDBAM -BQSR $BASECALIBRATEDCSV -o $RECALIBRATEDBAM
 		List<String> command = new ArrayList<String>();
+		
+		command.add("java");
+		command.add("-jar");
+		command.add("/cac/u01/jz362/Workflow/gatk/GenomeAnalysisTK.jar");
+		
 		
 		command.add("-T");
 		command.add("PrintReads");

@@ -25,14 +25,12 @@ public class PrepareBaseRecalibrator implements Task {
 		for(String location: helper.getInputsHash().keySet()){
 			List<String> files = helper.getInputsHash().get(location);
 			for(String inputFile:files){
-				bamMergeCommand.add(stagingLocation + File.separator + inputFile);
+				bamMergeCommand.add(stagingLocation + File.separator+ inputFile);
 			}
 		}
 		Util.runProcessWithListOfCommands(bamMergeCommand);
 		outfiles.add(outputBAM);
 		List<FileProperties> resultFiles=task.uploadResults(outfiles,workingDir, helper.getOutputFile());
 		return new Object[]{"OK",resultFiles};
-	
 	}
-
 }

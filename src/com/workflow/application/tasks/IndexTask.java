@@ -25,7 +25,7 @@ public class IndexTask implements Task {
 		for(String location: helper.getInputsHash().keySet()){
 			List<String> files = helper.getInputsHash().get(location);
 			for(String inputFile:files){
-				inputFiles.add( inputFile);
+				inputFiles.add(stagingLocation + File.separator + inputFile);
 				outputFiles.add(new File(inputFile).getName());	
 			}
 		}

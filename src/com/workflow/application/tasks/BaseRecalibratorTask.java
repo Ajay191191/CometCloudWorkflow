@@ -28,6 +28,7 @@ public class BaseRecalibratorTask implements Task {
 		for(String location: helper.getInputsHash().keySet()){
 			List<String> files = helper.getInputsHash().get(location);
 			for(String inputFile:files){
+				if(!inputFile.endsWith(".bai"))
 				inputFiles.add(stagingLocation + File.separator + inputFile);
 			}
 		}
@@ -42,12 +43,13 @@ public class BaseRecalibratorTask implements Task {
 		Util.runProcessWithListOfCommands(baseRecalibratorCommand);
 		
 		List<String> contigsListCommand = Util.getContigsListCommand(inputFiles.get(0));
-		contigsListCommand.add(outputContigsFile);
+		contigsListCommand.add(workingDir + File.separator + outputContigsFile);
 		
-		Util.runProcessWithListOfCommands(contigsListCommand);
+//		Util.runProcessWithListOfCommands(contigsListCommand);
+		Util.writeShAndStartProcess(contigsListCommand, workingDir, random, "_getContigs.sh");
 		
 		outputFiles.add(outputFile);
-		outputFiles.addAll(Util.splitBAMbyChromosome(new File(outputContigsFile), inputFiles.get(0)));
+//		outputFiles.addAll(Util.splitBAMbyChromosome(new File(outputContigsFile), inputFiles.get(0)));
 		resultFiles=task.uploadResults(outputFiles,workingDir, helper.getOutputFile());
 		return new Object[]{"OK",resultFiles};
 	}
