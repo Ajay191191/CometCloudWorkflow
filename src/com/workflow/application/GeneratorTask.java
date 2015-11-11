@@ -66,7 +66,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 	                if(fileParts[1].contains("_2_"))
 	                	continue;
 	                inputs.add(new FileProperties(fileParts[1],inputS,Double.parseDouble(fileParts[0]),inputFP.getZone(), inputFP.getSitename(), inputFP.getConstraints()));
-//	                inputs.add(new FileProperties(fileParts[1].replace("_1_", "_2_"),inputS,Double.parseDouble(fileParts[0]),inputFP.getZone(), inputFP.getSitename(), inputFP.getConstraints()));
+	                inputs.add(new FileProperties(fileParts[1].replace("_1_", "_2_"),inputS,Double.parseDouble(fileParts[0]),inputFP.getZone(), inputFP.getSitename(), inputFP.getConstraints()));
 	                double taskDuration=minTimeVal + (Math.random() * (maxTimeVal - minTimeVal));
 	                taskParams.add(taskid, Arrays.asList(method,output,inputs,taskDuration));
 	                taskRequirement.add("large");
