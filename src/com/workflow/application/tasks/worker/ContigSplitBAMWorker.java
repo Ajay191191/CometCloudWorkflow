@@ -1,5 +1,6 @@
 package com.workflow.application.tasks.worker;
 
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -40,7 +41,7 @@ public class ContigSplitBAMWorker implements Worker<String>{
 //		Util.runProcessWithListOfCommands(splitBAMByChromosomeCommand);
 		Util.writeShAndStartProcess(splitBAMByChromosomeCommand, System.getProperty("WorkingDir"), Math.random()*1000, "_splitBAM.sh");
 		
-		return outputBAM;
+		return new File(outputBAM).getName();
 	}
 	
 }

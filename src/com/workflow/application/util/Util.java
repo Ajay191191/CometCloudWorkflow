@@ -259,6 +259,10 @@ public class Util {
 		//-A QualByDepth -A MappingQualityRankSumTest -A VariantType -A MappingQualityZero -minPruning 10 -stand_call_conf 30.0 -stand_emit_conf 10.0
 		List<String> command = new ArrayList<String>();
 
+		command.add("java");
+		command.add("-jar");
+		command.add("/cac/u01/jz362/Workflow/gatk/GenomeAnalysisTK.jar");
+		
 		command.add("-T");
 		command.add("HaplotypeCaller");
 		command.add("-nct");

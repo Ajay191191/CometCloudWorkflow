@@ -25,6 +25,7 @@ public class PrintReadsTask implements Task {
 		for(String location: helper.getInputsHash().keySet()){
 			List<String> files = helper.getInputsHash().get(location);
 			for(String inputFile:files){
+				if(!inputFile.endsWith(".bai"))
 				inputFiles.add(stagingLocation + File.separator + inputFile);
 			}
 		}
@@ -32,9 +33,13 @@ public class PrintReadsTask implements Task {
 		if(inputFiles.size()>1){
 			return new Object[]{"FAIL",resultFiles};
 		}
-		List<String> printReadsCommand = Util.getPrintReadsCommand( inputFiles.get(0), workingDir + File.separator +outputBAM, helper.getNthObjectFromList(3).toString());
-		Util.runProcessWithListOfCommands(printReadsCommand);
-		outputFiles.add(outputBAM);
+		Object calibratedCSV = helper.getNthObjectFromList(3);
+		if(calibratedCSV instanceof FileProperties){
+			List<String> printReadsCommand = Util.getPrintReadsCommand( inputFiles.get(0), workingDir + File.separator +outputBAM,stagingLocation + File.separator + ((FileProperties)calibratedCSV).getName());
+			Util.runProcessWithListOfCommands(printReadsCommand);
+			outputFiles.add(outputBAM);
+			outputFiles.add(outputBAM.replaceAll(".bam", ".bai"));
+		}
 		resultFiles =task.uploadResults(outputFiles,workingDir, helper.getOutputFile());
 		return new Object[]{"OK",resultFiles};
 	

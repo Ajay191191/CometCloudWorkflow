@@ -18,24 +18,25 @@ public class HaplotypeCallerTask implements Task {
 		String workingDir = System.getProperty("WorkingDir");
 		List<String> inputFiles=new ArrayList();
 		List<String> outputFiles=new ArrayList();
-		String outputvcf = Math.random()*1000+"_"+System.getProperty("Name")+ "_index.sh";
+		String outputvcf = Math.random()*1000+"_"+System.getProperty("Name")+ "_output.vcf";
 		String stagingLocation = helper.getInputLocation();
 		
 		for(String location: helper.getInputsHash().keySet()){
 			List<String> files = helper.getInputsHash().get(location);
 			for(String inputFile:files){
-				inputFiles.add(stagingLocation+File.separator + inputFile);
+				if(!inputFile.endsWith(".bai"))
+					inputFiles.add(stagingLocation+File.separator + inputFile);
 			}
 		}
 		List<FileProperties> resultFiles=null;
 		if(inputFiles.size()>1){
 			return new Object[]{"FAIL",resultFiles};
 		}
-		resultFiles=task.uploadResults(outputFiles,workingDir, helper.getOutputFile());
 		List<String> haplotypeCallerCommand = Util.getHaplotypeCallerCommand( inputFiles.get(0), workingDir + File.separator +outputvcf);
 		Util.runProcessWithListOfCommands(haplotypeCallerCommand);
 		outputFiles.add(outputvcf);
 		
+		resultFiles=task.uploadResults(outputFiles,workingDir, helper.getOutputFile());
 		return new Object[]{"OK",resultFiles};
 	}
 
