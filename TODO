@@ -1,17 +1,20 @@
 //
 
-BaseRecalibrator: Create a threaded task which splits bam by chromosome. Add the calibrated csv and the split bams in the output list. 
+* BaseRecalibrator: Create a threaded task which splits bam by chromosome. Add the calibrated csv and the split bams in the output list. 
 After that, in generateTasks : 
-1) If input <> calibrated.csv, generate task for input and pass calibrated csv as parameter to the task.
+ If input <> calibrated.csv, generate task for input and pass calibrated csv as parameter to the task.
+ In print reads, get the calibrated csv from the parameter and perform further operation.
 
-In print reads, get the calibrated csv from the parameter and perform further operation.
 -Done
 
-Create haplotype caller task.
+* Create haplotype caller task.
 -Done
 
-Right now, only 1 worker is used for all the tasks.
-Mark duplicates does not work in the asynchronous tree.
+* Right now, only 1 worker is used for all the tasks. - Done (Had to use a different scheduler)
+Mark duplicates does not work in the asynchronous tree. 
 
-When stages are not blocking, we get results from previous stage in an asynchronous way. So how do we create unique tasks for each of the files we get from previous results.
+* When stages are not blocking, we get results from previous stage in an asynchronous way. So how do we create unique tasks for each of the files we get from previous results.
 Like how do we say that if a new task is generated for a particular file, then don't again create that task. Variables do not persist.
+- Partially done by using a static variable. But I guess it is not the right solution.
+
+* Perform tests.
