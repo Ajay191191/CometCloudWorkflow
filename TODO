@@ -12,3 +12,6 @@ Create haplotype caller task.
 
 Right now, only 1 worker is used for all the tasks.
 Mark duplicates does not work in the asynchronous tree.
+
+When stages are not blocking, we get results from previous stage in an asynchronous way. So how do we create unique tasks for each of the files we get from previous results.
+Like how do we say that if a new task is generated for a particular file, then don't again create that task. Variables do not persist.

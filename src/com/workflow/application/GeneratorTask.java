@@ -3,26 +3,26 @@ package com.workflow.application;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.workflow.application.tasks.IndexPrepare;
 import com.workflow.application.util.HelperConstants;
+import com.workflow.application.util.Util;
 
 import tassl.application.cometcloud.FileProperties;
 import tassl.application.cometcloud.GenerateTasksAbstract;
 import tassl.application.cometcloud.GenerateTasksObject;
 
 public class GeneratorTask extends GenerateTasksAbstract {
-
 	
 	@Override
 	public GenerateTasksObject createTasks(String stageId, List<FileProperties> input, FileProperties output,String propertyFileValues, List dependencies, String method){
 	    GenerateTasksObject taskObj=null;
 	    this.loadProperties(propertyFileValues);
 	    Logger.getLogger(GeneratorTask.class.getName()).log(Level.INFO,"method " + method);
-		  
 	    if(method.equals(HelperConstants.MAP)){
 	        taskObj=map(input,output,propertyFileValues,method);
 	    }else if(method.equals(HelperConstants.REDUCE) 
@@ -118,11 +118,13 @@ public class GeneratorTask extends GenerateTasksAbstract {
 		double minTimeVal = Double.parseDouble(getProperty("minTime"));
 		double maxTimeVal = Double.parseDouble(getProperty("maxTime"));
 		
-		
 		Logger.getLogger(GeneratorTask.class.getName()).log(Level.INFO,"Previous Results " + previousResults.keySet());
-			
+		Logger.getLogger(GeneratorTask.class.getName()).log(Level.INFO,"Previous set " + Util.NtoNTasks);
 		for (String key : previousResults.keySet()) {
 			List<FileProperties> inputs = new ArrayList();
+			if(Util.NtoNTasks.contains(previousResults.get(key)))
+				continue;
+			Util.NtoNTasks.add(previousResults.get(key));
 			inputs.add(previousResults.get(key));
 			inputList.add(inputs);
 			taskParams.add(taskid, Arrays.asList(method,output, inputs));

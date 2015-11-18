@@ -76,20 +76,20 @@
   
 </stages>
 <objectives>
-     <objective id="S1" type="DeadlineLocalityAware" value="1377" />
-     <objective id="S2" type="DeadlineLocalityAware" value="4776" />
-     <objective id="S3" type="DeadlineLocalityAware" value="5776" />
-     <objective id="S4" type="DeadlineLocalityAware" value="5777" />
-     <objective id="S5" type="DeadlineLocalityAware" value="5778" />
-     <objective id="S6" type="DeadlineLocalityAware" value="5779" />
-     <objective id="S7" type="DeadlineLocalityAware" value="5780" />
-     <objective id="S8" type="DeadlineLocalityAware" value="5781" />
-     <objective id="S9" type="DeadlineLocalityAware" value="5782" />
+     <objective id="S1" type="MinRunningTime" value="1377" />
+     <objective id="S2" type="MinRunningTime" value="4776" />
+     <objective id="S3" type="MinRunningTime" value="5776" />
+     <objective id="S4" type="MinRunningTime" value="5777" />
+     <objective id="S5" type="MinRunningTime" value="5778" />
+     <objective id="S6" type="MinRunningTime" value="5779" />
+     <objective id="S7" type="MinRunningTime" value="5780" />
+     <objective id="S8" type="MinRunningTime" value="5781" />
+     <objective id="S9" type="MinRunningTime" value="5782" />
 </objectives>
 <transitions>
 <!-- Keeping it true for now as the binary tree reduction does not work and it creates a task for each of the tasks created in this and thus for the next task even though blocking is true, n tasks are created. -->
         <transition from="S1" to="S2" blocking="true"/> 
-        <transition from="S2" to="S3" blocking="true"/>
+        <transition from="S2" to="S3" blocking="false"/>
         <transition from="S3" to="S4" blocking="false"/>
         <transition from="S4" to="S5" blocking="false"/>
         <transition from="S5" to="S6" blocking="true"/>

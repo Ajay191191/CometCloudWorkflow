@@ -33,6 +33,7 @@ public class WorkerTask extends WorkflowMeteorGenericWorker {
 	    
 	    Task task = inputHelper.getTask();
 	    
+	    
 	    return task.performTask(inputHelper,this);
 	}
 

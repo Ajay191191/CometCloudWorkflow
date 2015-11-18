@@ -11,7 +11,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,8 +23,13 @@ import com.workflow.application.tasks.worker.ContigSplitBAMWorker;
 import com.workflow.application.tasks.worker.PoolFactory;
 import com.workflow.application.tasks.worker.Worker;
 
+import tassl.application.cometcloud.FileProperties;
+
 public class Util {
 
+	
+	public static Set<FileProperties> NtoNTasks = new HashSet<>();
+	
 	public static List<String> getBWACommand(String groupID){
 		List<String> command = new ArrayList<String>();
     	command.add("/cac/u01/jz362/Workflow/bwa/bwa-0.7.12/bwa");
@@ -394,4 +401,11 @@ public class Util {
 		return null;
 	}
 	
+	public static String getStagingLocation(String stagingLocation, String workingDir, String inputFile) {
+		if(new File(stagingLocation + File.separator+ inputFile).exists())
+			return stagingLocation + File.separator+ inputFile;
+		if(new File(workingDir + File.separator+ inputFile).exists())
+			return workingDir + File.separator+ inputFile;
+		return null;
+	}
 }
