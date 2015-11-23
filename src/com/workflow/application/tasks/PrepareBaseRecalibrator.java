@@ -17,7 +17,7 @@ public class PrepareBaseRecalibrator implements Task {
 
 		String workingDir = System.getProperty("WorkingDir");
 		List<String> outfiles=new ArrayList<>();
-		String outputBAM = Math.random()*1000 + "_"+System.getProperty("Name")+".bam";
+		String outputBAM = Math.random()*1000 + "_"+System.getProperty("Name")+"_realigned_merged.bam";
 		String stagingLocation = helper.getInputLocation();
 		System.out.println("Location " + stagingLocation);
 		List<String> bamMergeCommand = Util.getBAMMergeCommand(workingDir + File.separator +outputBAM);
@@ -27,7 +27,6 @@ public class PrepareBaseRecalibrator implements Task {
 			for(String inputFile:files){
 				if(!inputFile.endsWith(".bai")){
 					bamMergeCommand.add(Util.getStagingLocation(stagingLocation,workingDir, inputFile));
-					
 				}
 			}
 		}

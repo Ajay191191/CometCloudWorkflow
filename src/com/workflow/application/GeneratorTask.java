@@ -122,16 +122,16 @@ public class GeneratorTask extends GenerateTasksAbstract {
 		Logger.getLogger(GeneratorTask.class.getName()).log(Level.INFO,"Previous set " + Util.NtoNTasks);
 		for (String key : previousResults.keySet()) {
 			List<FileProperties> inputs = new ArrayList();
-			if(Util.NtoNTasks.contains(previousResults.get(key)))
+			/*if(Util.NtoNTasks.contains(previousResults.get(key)))
 				continue;
-			Util.NtoNTasks.add(previousResults.get(key));
+			Util.NtoNTasks.add(previousResults.get(key));*/
 			inputs.add(previousResults.get(key));
 			inputList.add(inputs);
 			taskParams.add(taskid, Arrays.asList(method,output, inputs));
 			taskRequirement.add("large"); // Requirement
 			minTime.add(minTimeVal);
 			maxTime.add(maxTimeVal);
-			inputList.add(inputs);
+//			inputList.add(inputs);
 			taskid++;
 		}
 		return new GenerateTasksObject(taskParams, taskRequirement, minTime,maxTime, inputList, null);

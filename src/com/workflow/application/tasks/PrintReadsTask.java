@@ -19,7 +19,7 @@ public class PrintReadsTask implements Task {
 		String workingDir = System.getProperty("WorkingDir");
 		List<String> inputFiles=new ArrayList();
 		List<String> outputFiles=new ArrayList();
-		String outputBAM = Math.random()*1000+"_"+System.getProperty("Name")+ "_output.bam";
+		String outputBAM = Math.random()*1000+"_"+System.getProperty("Name")+ "_output_recalibrated.bam";
 		String stagingLocation = helper.getInputLocation();
 		
 		for(String location: helper.getInputsHash().keySet()){
