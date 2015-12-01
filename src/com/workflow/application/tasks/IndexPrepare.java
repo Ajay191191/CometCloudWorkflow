@@ -62,7 +62,13 @@ public class IndexPrepare implements Task {
 				outfiles.add(str);
 			}
 		}*/
-		outfiles.addAll(Util.splitBAMbyChromosome(new File(workingDir + File.separator +outputContigsFile),stagingLocation +  inputFiles.get(0)));
+		List<String> splitBAMbyChromosome = Util.splitBAMbyChromosome(new File(workingDir + File.separator +outputContigsFile),stagingLocation +  inputFiles.get(0));
+		outfiles.addAll(splitBAMbyChromosome);
+		List<String> baiFiles = new ArrayList<>();
+		for(String splitBam:splitBAMbyChromosome){
+			baiFiles.add(splitBam+".bai");
+		}
+		task.uploadResults(baiFiles, workingDir, helper.getOutputFile());
 		
 		resultFiles=task.uploadResults(outfiles, workingDir, helper.getOutputFile());
     	return new Object[]{"OK",resultFiles};

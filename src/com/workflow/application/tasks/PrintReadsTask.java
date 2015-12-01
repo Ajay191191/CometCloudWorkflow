@@ -26,7 +26,8 @@ public class PrintReadsTask implements Task {
 			List<String> files = helper.getInputsHash().get(location);
 			for(String inputFile:files){
 				if(!inputFile.endsWith(".bai"))
-				inputFiles.add(stagingLocation + File.separator + inputFile);
+					inputFiles.add(Util.getStagingLocation(stagingLocation,workingDir, inputFile));
+//				inputFiles.add(stagingLocation + File.separator + inputFile);
 			}
 		}
 		List<FileProperties> resultFiles=null;

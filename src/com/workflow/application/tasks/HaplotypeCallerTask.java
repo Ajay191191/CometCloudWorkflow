@@ -29,8 +29,8 @@ public class HaplotypeCallerTask implements Task {
 			}
 		}
 		List<FileProperties> resultFiles=null;
-		if(inputFiles.size()>1){
-			return new Object[]{"FAIL",resultFiles};
+		if(inputFiles.size()>1 || inputFiles.size() ==0 ){
+			return new Object[]{"OK",resultFiles};
 		}
 		List<String> haplotypeCallerCommand = Util.getHaplotypeCallerCommand( inputFiles.get(0), workingDir + File.separator +outputvcf);
 		Util.runProcessWithListOfCommands(haplotypeCallerCommand);

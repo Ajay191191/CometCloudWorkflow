@@ -18,6 +18,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.common.collect.Lists;
+import com.workflow.application.WorkerTask;
+import com.workflow.application.helper.InputHelper;
 import com.workflow.application.tasks.IndexPrepare;
 import com.workflow.application.tasks.worker.ContigSplitBAMWorker;
 import com.workflow.application.tasks.worker.PoolFactory;
@@ -407,5 +410,15 @@ public class Util {
 		if(new File(workingDir + File.separator+ inputFile).exists())
 			return workingDir + File.separator+ inputFile;
 		return null;
+	}
+	
+	public static List<FileProperties> uploadAndGetResults(InputHelper helper, WorkerTask task, String workingDir,List<String> toUpload, int size) {
+		List<FileProperties> resultFiles;
+		List<List<String>> partition = Lists.partition(toUpload, size);
+		resultFiles = new ArrayList<>();
+		for(List<String> list:partition){
+			resultFiles.addAll(task.uploadResults(list,workingDir, helper.getOutputFile()));
+		}
+		return resultFiles;
 	}
 }

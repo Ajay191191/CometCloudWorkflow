@@ -26,11 +26,18 @@ public class RealignerTargetCreatorTask implements Task {
 		for(String location: helper.getInputsHash().keySet()){
 			List<String> files = helper.getInputsHash().get(location);
 			for(String inputFile:files){
-				inputFiles.add(stagingLocation + File.separator + inputFile);
+				if(!inputFile.endsWith(".bai")){
+					inputFiles.add(stagingLocation + File.separator + inputFile);
+				}
 			}
 		}
 		
 
+		List<FileProperties> resultFiles=null;
+		if(inputFiles.size()!=1){
+			return new Object[]{"OK",resultFiles};
+		}
+		
 		String randomString = Math.random()*1000 + "_"+System.getProperty("Name");
 		String intervalsFile = randomString+"_output.intervals";
 		
@@ -47,7 +54,7 @@ public class RealignerTargetCreatorTask implements Task {
 		
 		outputFiles.add(outputBam);
 		outputFiles.add(outputBam.replaceAll(".bam", ".bai"));
-		List<FileProperties> resultFiles=task.uploadResults(outputFiles,workingDir, helper.getOutputFile());
+		resultFiles=task.uploadResults(outputFiles,workingDir, helper.getOutputFile());
 		return new Object[]{"OK",resultFiles};
 	
 	}

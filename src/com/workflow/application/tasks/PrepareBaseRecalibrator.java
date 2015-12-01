@@ -2,6 +2,7 @@ package com.workflow.application.tasks;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.workflow.application.WorkerTask;
@@ -32,9 +33,11 @@ public class PrepareBaseRecalibrator implements Task {
 		}
 		Util.runProcessWithListOfCommands(bamMergeCommand);
 		List<String> indexCommand = Util.getIndexCommand();
-		indexCommand.add(outputBAM);
+		indexCommand.add(workingDir + File.separator +outputBAM);
+		Util.runProcessWithListOfCommands(indexCommand);
 		outfiles.add(outputBAM);
-		outfiles.add(outputBAM.replaceAll("bam", "bai"));
+		task.uploadResults(new ArrayList<String>(Arrays.asList(outputBAM+".bai")),workingDir, helper.getOutputFile());
+//		outfiles.add(outputBAM.replaceAll("bam", "bai"));
 		List<FileProperties> resultFiles=task.uploadResults(outfiles,workingDir, helper.getOutputFile());
 		return new Object[]{"OK",resultFiles};
 	}

@@ -2,8 +2,10 @@ package com.workflow.application.tasks;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import com.workflow.application.WorkerTask;
 import com.workflow.application.helper.InputHelper;
 import com.workflow.application.tasks.worker.PoolFactory;
@@ -25,6 +27,8 @@ public class BaseRecalibratorTask implements Task {
 		String outputContigsFile = random + "_"+System.getProperty("Name")+"_contigs.txt";
 		String stagingLocation = helper.getInputLocation();
 		
+//		FileProperties inputFileProperties = null;
+		
 		for(String location: helper.getInputsHash().keySet()){
 			List<String> files = helper.getInputsHash().get(location);
 			for(String inputFile:files){
@@ -33,6 +37,7 @@ public class BaseRecalibratorTask implements Task {
 					inputFiles.add(Util.getStagingLocation(stagingLocation,workingDir, inputFile));
 					//For now delete after adding split bams:
 //					outputFiles.add(new File(inputFile).getName());
+//					inputFileProperties = helper.getInputFiles().get(0);	//Will have to change this
 				}
 			}
 		}
@@ -40,8 +45,8 @@ public class BaseRecalibratorTask implements Task {
 		
 		String outputFile = Math.random()*1000 + "_"+System.getProperty("Name")+"_calibration.csv";
 		List<FileProperties> resultFiles=null;
-		if(inputFiles.size()>1)
-			return new Object[]{"FAIL",resultFiles};
+		if(inputFiles.size()>1 || inputFiles.size()==0)
+			return new Object[]{"OK",resultFiles};
 		
 		List<String> baseRecalibratorCommand = Util.getBaseRecalibratorCommand( inputFiles.get(0), workingDir + File.separator + outputFile);
 		Util.runProcessWithListOfCommands(baseRecalibratorCommand);
@@ -52,11 +57,27 @@ public class BaseRecalibratorTask implements Task {
 //		Util.runProcessWithListOfCommands(contigsListCommand);
 		Util.writeShAndStartProcess(contigsListCommand, workingDir, random, "_getContigs.sh");
 		
-		outputFiles.add(outputFile);
-		outputFiles.addAll(Util.splitBAMbyChromosome(new File(outputContigsFile), inputFiles.get(0)));
-		resultFiles=task.uploadResults(outputFiles,workingDir, helper.getOutputFile());
+		
+//		List<String> toUpload = new ArrayList<>();
+		resultFiles = new ArrayList<>();
+		resultFiles.addAll(task.uploadResults(new ArrayList<>(Arrays.asList(outputFile)), workingDir, helper.getOutputFile()));
+		List<String> splitBAMbyChromosome = Util.splitBAMbyChromosome(new File(workingDir + File.separator + outputContigsFile), inputFiles.get(0));
+		
+//		toUpload.addAll(splitBAMbyChromosome);
+//		toUpload.add(outputFile);
+//		resultFiles = Util.uploadAndGetResults(helper, task, workingDir, toUpload,1);
+		
+		resultFiles.addAll(task.uploadResults(splitBAMbyChromosome, workingDir, helper.getOutputFile()));
+		
+		List<String> baiFiles = new ArrayList<>();
+		for(String splitBam:splitBAMbyChromosome){
+			baiFiles.add(splitBam+".bai");
+		}
+		task.uploadResults(baiFiles, workingDir, helper.getOutputFile());
+		
+		
+//		resultFiles.add(inputFileProperties);
 		return new Object[]{"OK",resultFiles};
 	}
-	
-	
+
 }

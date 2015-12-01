@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class PoolFactory<T>{
 	
@@ -40,11 +41,13 @@ public class PoolFactory<T>{
 
 
 	public List<T> runAndGetResults() throws InterruptedException, ExecutionException{
-		ExecutorService threadExecutor = Executors.newCachedThreadPool();
+		ExecutorService threadExecutor = Executors.newFixedThreadPool(20);
 		List<Future<T>> allResults = threadExecutor.invokeAll(this.workers);
 		for(Future<T> result : allResults){
 			output.add(result.get());
 		}
+		threadExecutor.shutdown();
+		threadExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 		return output;
 	}
 }

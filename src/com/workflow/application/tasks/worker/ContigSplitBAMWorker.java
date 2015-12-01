@@ -40,7 +40,9 @@ public class ContigSplitBAMWorker implements Worker<String>{
 		List<String> splitBAMByChromosomeCommand = Util.getSplitBAMByChromosomeCommand(chr, inputBAM, outputBAM);
 //		Util.runProcessWithListOfCommands(splitBAMByChromosomeCommand);
 		Util.writeShAndStartProcess(splitBAMByChromosomeCommand, System.getProperty("WorkingDir"), Math.random()*1000, "_splitBAM.sh");
-		
+		List<String> indexCommand = Util.getIndexCommand();
+		indexCommand.add(outputBAM);
+		Util.runProcessWithListOfCommands(indexCommand);
 		return new File(outputBAM).getName();
 	}
 	

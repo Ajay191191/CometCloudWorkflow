@@ -26,13 +26,13 @@
   </stage>
   <stage id="S3" type="Results" value="jz362@dell01:/cac/u01/jz362/cometcloud/output/" zone="zoneA" site="clusterTest" constraint=""/>
   
-  <stage id="S4" type="AppGenerateClass" value="com.workflow.application.GeneratorTask" method="index"/>
+  <!-- <stage id="S4" type="AppGenerateClass" value="com.workflow.application.GeneratorTask" method="index"/>
   <stage id="S4" type="PropertyFile" value="./sample.properties"/>
   <stage id="S4" type="Application" value="Workflow"/>
   <stage id="S4" type="InputData">
 	<InputData value="jz362@dell01:/cac/u01/jz362/cometcloud/inputs/" zone="zoneA" site="clusterTest"  constraint=""/>    
   </stage>
-  <stage id="S4" type="Results" value="jz362@dell01:/cac/u01/jz362/cometcloud/output/" zone="zoneA" site="clusterTest" constraint=""/>
+  <stage id="S4" type="Results" value="jz362@dell01:/cac/u01/jz362/cometcloud/output/" zone="zoneA" site="clusterTest" constraint=""/> -->
 
   <stage id="S5" type="AppGenerateClass" value="com.workflow.application.GeneratorTask" method="RealignerTargetCreator"/>
   <stage id="S5" type="PropertyFile" value="./sample.properties"/>
@@ -79,7 +79,7 @@
      <objective id="S1" type="MinRunningTime" value="1377" />
      <objective id="S2" type="MinRunningTime" value="1377" />
      <objective id="S3" type="MinRunningTime" value="1377" />
-     <objective id="S4" type="MinRunningTime" value="1377" />
+     <!-- <objective id="S4" type="MinRunningTime" value="1377" /> -->
      <objective id="S5" type="MinRunningTime" value="1377" />
      <objective id="S6" type="MinRunningTime" value="1377" />
      <objective id="S7" type="MinRunningTime" value="1377" />
@@ -90,8 +90,8 @@
 <!-- Keeping it true for now as the binary tree reduction does not work and it creates a task for each of the tasks created in this and thus for the next task even though blocking is true, n tasks are created. -->
         <transition from="S1" to="S2" blocking="true"/> 
         <transition from="S2" to="S3" blocking="false"/>
-        <transition from="S3" to="S4" blocking="false"/>
-        <transition from="S4" to="S5" blocking="false"/>
+        <!-- <transition from="S3" to="S4" blocking="false"/> -->
+        <transition from="S3" to="S5" blocking="true"/>
         <transition from="S5" to="S6" blocking="true"/>
         <transition from="S6" to="S7" blocking="false"/>
         <transition from="S7" to="S8" blocking="false"/>

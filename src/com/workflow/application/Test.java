@@ -1,93 +1,74 @@
 package com.workflow.application;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.URL;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import javax.net.ssl.HttpsURLConnection;
+import com.workflow.application.util.Util;
 
-import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
-import org.apache.commons.io.IOUtils;
+import tassl.application.utils.CommonUtils;
 
 public class Test {
 
 	public static void main(String args[]) {
-		try {
-			sendPost();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	// HTTP POST request
-	private static void sendPost() throws Exception {
-
-		String url = "https://api.projectoxford.ai/emotion/v1.0/recognize";
-		URL obj = new URL(url);
-		System.out.println(new URL("http://nothippyjusthealthy.com/wp-content/uploads/2014/06/Curtis-family-090-re.jpg").toString());
-		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
-
-		byte[] extractBytes = extractBytes("C:/Users/Ajay/Downloads/Curtis-family-090-re.png");
-		con.setRequestMethod("POST");
-		con.setRequestMethod("POST");
-		con.setDoInput(true);
-		con.setDoOutput(true);
-		con.setRequestProperty("Ocp-Apim-Subscription-Key", "b4f6718ebe2145a1b53196824296aff3");
-		con.setRequestProperty("Content-Type", "application/octet-stream");
-		con.setRequestProperty("Content-Length", extractBytes.length+"");
-//		String urlParameters = "{\"url\":\"http://nothippyjusthealthy.com/wp-content/uploads/2014/06/Curtis-family-090-re.jpg\"}";
-
-        OutputStream os = con.getOutputStream();
-        DataOutputStream writer = new DataOutputStream(os);
-		writer.write(extractBytes);
-        writer.flush();
-        writer.close();
-        os.close();
+		/**
+		 * List<String> contigsListCommand = Util.getContigsListCommand(inputFiles.get(0));
+		contigsListCommand.add(workingDir + File.separator + outputContigsFile);
 		
+//		Util.runProcessWithListOfCommands(contigsListCommand);
+		Util.writeShAndStartProcess(contigsListCommand, workingDir, random, "_getContigs.sh");
+		Util.splitBAMbyChromosome(new File(workingDir + File.separator + outputContigsFile), inputFiles.get(0));
+		 */
+		/*System.setProperty("WorkingDir", "/cac/u01/jz362/cometcloud/test/");
+		List<String> contigsListCommand = Util.getContigsListCommand(args[0]);
+		contigsListCommand.add("/cac/u01/jz362/cometcloud/test/output.contig");
 		
-        System.out.println(con.toString());
-
-		int responseCode = con.getResponseCode();
-
-		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-		String inputLine;
-		StringBuffer response = new StringBuffer();
-
-		while ((inputLine = in.readLine()) != null) {
-			response.append(inputLine);
-		}
-		in.close();
-
-		// print result
-		System.out.println(response.toString());
-
-	}
-	
-	public static byte[] extractBytes (String ImageName) {
-		try {
-			InputStream image = new FileInputStream(ImageName);
-			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-			int bytesRead;
-			byte[] bytes = new byte[1024];
-			while ((bytesRead = image.read(bytes)) > 0) {
-			    byteArrayOutputStream.write(bytes, 0, bytesRead);
+//		Util.runProcessWithListOfCommands(contigsListCommand);
+		Util.writeShAndStartProcess(contigsListCommand, "/cac/u01/jz362/cometcloud/test/", Math.random(), "_getContigs.sh");
+		
+		Util.splitBAMbyChromosome(new File("/cac/u01/jz362/cometcloud/test/output.contig"), args[0]);*/
+		
+		final String address=args[0];
+		final int port=Integer.parseInt(args[1]);
+		
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				Object [] streams=new Object[2];
+				DataOutputStream out = null;
+				DataInputStream in = null;
+				
+				try {
+					System.out.println("Before socket");
+					Socket clientSocket = new Socket(address, port);
+					System.out.println("After socket");
+					System.out.println("Before outputStream");
+					out = new DataOutputStream(clientSocket.getOutputStream());
+					System.out.println("After outputStream");					
+					in = new DataInputStream(clientSocket.getInputStream());
+					System.out.println("After inputStream");
+					String agentStatus=in.readUTF();
+					System.out.println("After readUTF");
+					System.out.println("Status " + agentStatus);
+				} catch (UnknownHostException ex) {
+					Logger.getLogger(Test.class.getName()).log(Level.SEVERE, "ERROR contacting "+address+":"+port, ex.getMessage());
+					ex.printStackTrace();
+				} catch (IOException ex) {
+					Logger.getLogger(Test.class.getName()).log(Level.SEVERE, "ERROR contacting "+address+":"+port, ex.getMessage());
+					ex.printStackTrace();
+				}
 			}
-			byte[] data = byteArrayOutputStream.toByteArray();
-			return data;
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+		}).run();
+		
+		
+		
 	}
 
 }
