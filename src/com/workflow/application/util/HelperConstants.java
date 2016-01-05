@@ -12,6 +12,6 @@ public class HelperConstants {
 	public static String HAPLOTYPECALLER = "haplotypeCaller";
 	public static String PRINTREADS = "printReads";
 	
-	public static int numberOfThreads = 15;
+	public static int numberOfThreads = 1;
 	
 }

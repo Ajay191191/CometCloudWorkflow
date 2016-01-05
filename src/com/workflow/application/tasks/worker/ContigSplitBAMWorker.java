@@ -2,7 +2,6 @@ package com.workflow.application.tasks.worker;
 
 import java.io.File;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import com.workflow.application.util.Util;
 
@@ -38,8 +37,8 @@ public class ContigSplitBAMWorker implements Worker<String>{
 	@Override
 	public String call() throws Exception {
 		List<String> splitBAMByChromosomeCommand = Util.getSplitBAMByChromosomeCommand(chr, inputBAM, outputBAM);
-//		Util.runProcessWithListOfCommands(splitBAMByChromosomeCommand);
-		Util.writeShAndStartProcess(splitBAMByChromosomeCommand, System.getProperty("WorkingDir"), Math.random()*1000, "_splitBAM.sh");
+		Util.runProcessWithListOfCommands(splitBAMByChromosomeCommand);
+//		Util.writeShAndStartProcess(splitBAMByChromosomeCommand, System.getProperty("WorkingDir"), Math.random()*1000, "_splitBAM.sh");
 		List<String> indexCommand = Util.getIndexCommand();
 		indexCommand.add(outputBAM);
 		Util.runProcessWithListOfCommands(indexCommand);

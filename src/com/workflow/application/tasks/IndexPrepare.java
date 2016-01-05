@@ -37,14 +37,15 @@ public class IndexPrepare implements Task {
 		for(String location: helper.getInputsHash().keySet()){
 			List<String> files = helper.getInputsHash().get(location);
 			for(String inputFile:files){
-				inputFiles.add(inputFile);
+				if(!inputFile.endsWith(".bai"))
+					inputFiles.add(inputFile);
 //				outfiles.add(new File(inputFile).getName());
 			}
 		}
 		
-		List<FileProperties> resultFiles=null;
-		if(inputFiles.size()>1)
-			return new Object[]{"FAIL",resultFiles};
+		List<FileProperties> resultFiles=new ArrayList<>();
+		if(inputFiles.size()>1 || inputFiles.size()==0)
+			return new Object[]{"OK",resultFiles};
 		String stagingLocation = helper.getInputLocation();
 		
 		

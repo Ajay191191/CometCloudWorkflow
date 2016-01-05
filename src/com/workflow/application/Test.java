@@ -1,18 +1,7 @@
 package com.workflow.application;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import com.workflow.application.util.Util;
-
-import tassl.application.utils.CommonUtils;
 
 public class Test {
 
@@ -34,7 +23,7 @@ public class Test {
 		
 		Util.splitBAMbyChromosome(new File("/cac/u01/jz362/cometcloud/test/output.contig"), args[0]);*/
 		
-		final String address=args[0];
+		/*final String address=args[0];
 		final int port=Integer.parseInt(args[1]);
 		
 		new Thread(new Runnable() {
@@ -66,9 +55,39 @@ public class Test {
 				}
 			}
 		}).run();
+		*/
+		System.out.println("Version 22");
+		/*Util.initFilePaths("", "samtools", "", "", "");
+		System.setProperty("WorkingDir", "/gpfs/scratch/ajaysudh/output/");
+		List<String> contigsListCommand = Util.getContigsListCommand(args[0]);
+		contigsListCommand.add("contigs.txt");
+		Util.writeShAndStartProcess(contigsListCommand, "/gpfs/scratch/ajaysudh/output/", 1, "_getContigs.sh");
+		Util.splitBAMbyChromosome(new File("/gpfs/scratch/ajaysudh/output/contigs.txt"), args[0]);*/
+		 
+/*		List<String> list = new ArrayList<>();
+		list.add("asd");
+		list.add("asd");
+		list.add("asd");
+		list.add("asd");
+		list.add("asd");
+		list.add("pqr");
+		list.add("pqr");
+		list.add("pqr");
+		list.add("pqr");
+		System.out.println(list);
+		list.removeAll(Collections.singleton("asd"));
+		System.out.println(list);*/
 		
 		
-		
+		int [][]curr = new int[100][100];
+		for(int i=1;i<100;i++){
+			for(int j=1;j<100;j++){
+				curr[i][j]=1;
+			}
+		}
+		List<String>  list = new ArrayList<>();
+//		List<Integer>  list = new ArrayList<>();
 	}
-
+	
+	
 }

@@ -3,9 +3,12 @@ package com.workflow.application.tasks;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import tassl.application.cometcloud.FileProperties;
 
+import com.workflow.application.GeneratorTask;
 import com.workflow.application.WorkerTask;
 import com.workflow.application.helper.InputHelper;
 import com.workflow.application.util.Util;
@@ -15,7 +18,9 @@ public class MapTask implements Task{
 	@Override
 	public Object[] performTask(InputHelper helper,WorkerTask task) {
 
-		
+		Logger.getLogger(WorkerTask.class.getName()).log(Level.INFO,"Vars: "  + System.getProperty("bwaExecutable") + System.getProperty("samtoolsExecutable") + System.getProperty("gatkJar") + System.getProperty("referenceFastqFile") + System.getProperty("dbsnpFile"));
+
+		Logger.getLogger(MapTask.class.getName()).log(Level.INFO,"Start BWA : " + System.currentTimeMillis());
 		String workingdir = System.getProperty("WorkingDir");
     	List<String> command = Util.getBWACommand(helper.getTasktuple().getTaskid()+"_"+System.getProperty("Name"));
     	

@@ -33,7 +33,7 @@ public class RealignerTargetCreatorTask implements Task {
 		}
 		
 
-		List<FileProperties> resultFiles=null;
+		List<FileProperties> resultFiles=new ArrayList<>();
 		if(inputFiles.size()!=1){
 			return new Object[]{"OK",resultFiles};
 		}

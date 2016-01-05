@@ -3,6 +3,8 @@ package com.workflow.application.tasks;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.workflow.application.WorkerTask;
 import com.workflow.application.helper.InputHelper;
@@ -28,16 +30,23 @@ public class HaplotypeCallerTask implements Task {
 					inputFiles.add(stagingLocation+File.separator + inputFile);
 			}
 		}
-		List<FileProperties> resultFiles=null;
+		List<FileProperties> resultFiles=new ArrayList<>();
 		if(inputFiles.size()>1 || inputFiles.size() ==0 ){
 			return new Object[]{"OK",resultFiles};
 		}
-		List<String> haplotypeCallerCommand = Util.getHaplotypeCallerCommand( inputFiles.get(0), workingDir + File.separator +outputvcf);
-		Util.runProcessWithListOfCommands(haplotypeCallerCommand);
-		outputFiles.add(outputvcf);
 		
-		resultFiles=task.uploadResults(outputFiles,workingDir, helper.getOutputFile());
+		Object calibratedCSV = helper.getNthObjectFromList(3);
+		if(calibratedCSV instanceof FileProperties){
+			List<String> haplotypeCallerCommand = Util.getHaplotypeCallerCommand( inputFiles.get(0), workingDir + File.separator +outputvcf,Util.getContigForFile(inputFiles.get(0)),Util.getStagingLocation(stagingLocation, workingDir, ((FileProperties)calibratedCSV).getName()));
+			Util.runProcessWithListOfCommands(haplotypeCallerCommand);
+			outputFiles.add(outputvcf);
+			
+			resultFiles=task.uploadResults(outputFiles,workingDir, helper.getOutputFile());
+			Logger.getLogger(HaplotypeCallerTask.class.getName()).log(Level.INFO,"End Haplotype : " + System.currentTimeMillis());
+		}
 		return new Object[]{"OK",resultFiles};
+		
+		
 	}
 
 }

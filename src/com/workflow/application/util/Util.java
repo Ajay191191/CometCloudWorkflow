@@ -26,31 +26,53 @@ import com.workflow.application.tasks.worker.ContigSplitBAMWorker;
 import com.workflow.application.tasks.worker.PoolFactory;
 import com.workflow.application.tasks.worker.Worker;
 
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SAMRecordIterator;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 import tassl.application.cometcloud.FileProperties;
 
 public class Util {
 
 	
 	public static Set<FileProperties> NtoNTasks = new HashSet<>();
+	public static String BWAExecutable;
+	public static String SAMTOOLSExecutable;
+	public static String GATKJar;
+	public static String ReferenceFile;
+	public static String DBSNPFile;
+	
+	public static void initFilePaths(String bwa, String samtools, String gatk, String reference, String dbsnp){
+		BWAExecutable = bwa==null?System.getenv("bwaExecutable"):bwa;
+		SAMTOOLSExecutable = samtools==null?System.getenv("samtoolsExecutable"):samtools;
+		GATKJar = gatk==null?System.getenv("gatkJar"):gatk;
+		ReferenceFile = reference==null?System.getenv("referenceFastqFile"):reference;
+		DBSNPFile = dbsnp==null?System.getenv("dbsnpFile"):dbsnp;
+//		BWAExecutable = "bwa";
+//		SAMTOOLSExecutable = "samtools";
+		HelperConstants.numberOfThreads = Runtime.getRuntime().availableProcessors();
+	}
 	
 	public static List<String> getBWACommand(String groupID){
 		List<String> command = new ArrayList<String>();
-    	command.add("/cac/u01/jz362/Workflow/bwa/bwa-0.7.12/bwa");
+    	command.add(BWAExecutable);
     	command.add("mem");
     	command.add("-M");
     	command.add("-t");
     	command.add("20");
     	command.add("-R");
     	command.add("\"@RG\\tID:group"+groupID+"\\tSM:SRR622457\\tPL:illumina\\tLB:lib1\\tPU:unit1\"");
-    	command.add("/cac/u01/jz362/Workflow/Reference/hg19.fasta");
+    	command.add(ReferenceFile);
     	return command;
 	}
 	
 	public static List<String> getPipeSortCommand(){
 		List<String> command = new ArrayList<String>();
 		command.add("|");
-		command.add("/cac/u01/jz362/Workflow/samtools/samtools-1.2/samtools");
+		command.add(SAMTOOLSExecutable);
 		command.add("sort");
+		command.add("-@");
+		command.add(HelperConstants.numberOfThreads+"");
 		command.add("-");
 		return command;
 	}
@@ -58,7 +80,7 @@ public class Util {
 	public static List<String> getContigsListCommand(String inputBam){
 		//~/Workflow/samtools/samtools-1.2/samtools view -H 542.0115432785603_clusterTest.bam | grep "^@SQ" | awk -F":" '{print $2}' | awk '{print $1}' > contigs.txt
 		List<String> command = new ArrayList<String>();
-		command.add("/cac/u01/jz362/Workflow/samtools/samtools-1.2/samtools");
+		command.add(SAMTOOLSExecutable);
 		command.add("view");
 		command.add("-H");
 		command.add(inputBam);
@@ -76,7 +98,7 @@ public class Util {
 		//for c in `cat contigs.txt` ; do echo processing $c; ~/Workflow/samtools/samtools-1.2/samtools view -bh 542.0115432785603_clusterTest.bam $c > split/$c.bam; don
 		List<String> command = new ArrayList<String>();
 		command.add("for c in `cat "+contigsFile+"`;");
-		command.add("/cac/u01/jz362/Workflow/samtools/samtools-1.2/samtools");
+		command.add(SAMTOOLSExecutable);
 		command.add("view");
 		command.add("-bh");
 		command.add(bamFile);
@@ -90,7 +112,7 @@ public class Util {
 	
 	public static List<String> getIndexCommand(){
 		List<String> command = new ArrayList<String>();
-		command.add("/cac/u01/jz362/Workflow/samtools/samtools-1.2/samtools");
+		command.add(SAMTOOLSExecutable);
 		command.add("index");
 		return command;
 	}
@@ -123,14 +145,14 @@ public class Util {
 
 		command.add("java");
 		command.add("-jar");
-		command.add("/cac/u01/jz362/Workflow/gatk/GenomeAnalysisTK.jar");
+		command.add(GATKJar);
 		
 		command.add("-T");
 		command.add("RealignerTargetCreator");
 		command.add("-nt");
 		command.add(HelperConstants.numberOfThreads+"");
 		command.add("-R");
-		command.add("/cac/u01/jz362/Workflow/Reference/hg19.fasta");
+		command.add(ReferenceFile);
 		command.add("-I");
 		command.add(inputBam);
 		command.add("--defaultBaseQualities");
@@ -149,13 +171,13 @@ public class Util {
 
 		command.add("java");
 		command.add("-jar");
-		command.add("/cac/u01/jz362/Workflow/gatk/GenomeAnalysisTK.jar");
+		command.add(GATKJar);
 		
 		
 		command.add("-T");
 		command.add("IndelRealigner");
 		command.add("-R");
-		command.add("/cac/u01/jz362/Workflow/Reference/hg19.fasta");
+		command.add(ReferenceFile);
 		command.add("-I");
 		command.add(inputBam);
 		command.add("-targetIntervals");
@@ -171,13 +193,13 @@ public class Util {
 
 	public static List<String> getBAMMergeCommand(String outputBAM){
 		List<String> command = new ArrayList<String>();
-		command.add("/cac/u01/jz362/Workflow/samtools/samtools-1.2/samtools");
+		command.add(SAMTOOLSExecutable);
 		command.add("merge");
 		command.add(outputBAM);
 		return command;
 	}
 	
-	public static List<String> getBaseRecalibratorCommand(String inputBam,String outputFile){
+	public static List<String> getBaseRecalibratorCommand(List<String> inputBam,String outputFile){
 		List<String> command = new ArrayList<String>();
 		//java -jar $GATKJARDIR/GenomeAnalysisTK.jar -T BaseRecalibrator -nct $NUMCPUTHREADS -R $REFERENCEDIR 
 		//-I $REALIGNEDBAM -o $BASECALIBRATEDCSV -cov ReadGroupCovariate -cov QualityScoreCovariate -cov CycleCovariate -cov 
@@ -185,7 +207,7 @@ public class Util {
 		
 		command.add("java");
 		command.add("-jar");
-		command.add("/cac/u01/jz362/Workflow/gatk/GenomeAnalysisTK.jar");
+		command.add(GATKJar);
 		
 		
 		command.add("-T");
@@ -193,9 +215,9 @@ public class Util {
 		command.add("-nct");
 		command.add(HelperConstants.numberOfThreads+"");
 		command.add("-R");
-		command.add("/cac/u01/jz362/Workflow/Reference/hg19.fasta");
-		command.add("-I");
-		command.add(inputBam);
+		command.add(ReferenceFile);
+//		command.add("-I");
+		command.addAll(inputBam);
 		command.add("-o");
 		command.add(outputFile);
 		command.add("-cov");
@@ -205,7 +227,7 @@ public class Util {
 		command.add("-cov");
 		command.add("ContextCovariate");
 		command.add("-knownSites");
-		command.add("/cac/u01/jz362/Workflow/dbsnp/dbsnp_137.hg19.vcf");
+		command.add(DBSNPFile);
 		
 		return command;
 	}
@@ -217,7 +239,7 @@ public class Util {
 		
 		command.add("java");
 		command.add("-jar");
-		command.add("/cac/u01/jz362/Workflow/gatk/GenomeAnalysisTK.jar");
+		command.add(GATKJar);
 		
 		
 		command.add("-T");
@@ -225,7 +247,7 @@ public class Util {
 		command.add("-nct");
 		command.add(HelperConstants.numberOfThreads+"");
 		command.add("-R");
-		command.add("/cac/u01/jz362/Workflow/Reference/hg19.fasta");
+		command.add(ReferenceFile);
 		command.add("-I");
 		command.add(inputBam);
 		command.add("-o");
@@ -246,9 +268,10 @@ public class Util {
 		//samtools view -b in.bam chr1 > in_chr1.bam
 		//samtools view -b -f 4 in.bam > unmapped.bam
 
-		command.add("/cac/u01/jz362/Workflow/samtools/samtools-1.2/samtools");
+		command.add(SAMTOOLSExecutable);
 		command.add("view");
-		command.add("-b");
+		command.add("-bo");
+		command.add(outputBAM);
 		command.add(inputBAM);
 		if(!chr.equalsIgnoreCase("unmapped"))
 			command.add(chr);
@@ -256,14 +279,11 @@ public class Util {
 			command.add("-f");
 			command.add("4");
 		}
-		command.add(">");
-		command.add(outputBAM);
-		
 		
 		return command;
 	}
 	
-	public static List<String> getHaplotypeCallerCommand(String inputBam,String outputVCF){
+	public static List<String> getHaplotypeCallerCommand(String inputBam,String outputVCF, String contig, String bqsrFile){
 		//-T HaplotypeCaller -nct $NUMCPUTHREADS -R $REFERENCEDIR -I $RECALIBRATEDBAM -o $OUTPUTVCF -D $DBSNFP135VCF 
 		//-A AlleleBalance -A Coverage -A HomopolymerRun -A FisherStrand -A HaplotypeScore -A HardyWeinberg -A ReadPosRankSumTest 
 		//-A QualByDepth -A MappingQualityRankSumTest -A VariantType -A MappingQualityZero -minPruning 10 -stand_call_conf 30.0 -stand_emit_conf 10.0
@@ -271,20 +291,20 @@ public class Util {
 
 		command.add("java");
 		command.add("-jar");
-		command.add("/cac/u01/jz362/Workflow/gatk/GenomeAnalysisTK.jar");
+		command.add(GATKJar);
 		
 		command.add("-T");
 		command.add("HaplotypeCaller");
 		command.add("-nct");
 		command.add(HelperConstants.numberOfThreads+"");
 		command.add("-R");
-		command.add("/cac/u01/jz362/Workflow/Reference/hg19.fasta");
+		command.add(ReferenceFile);
 		command.add("-I");
 		command.add(inputBam);
 		command.add("-o");
 		command.add(outputVCF);
 		command.add("-D");
-		command.add("/cac/u01/jz362/Workflow/dbsnp/dbsnp_137.hg19.vcf");
+		command.add(DBSNPFile);
 		command.add("-A");
 		command.add("AlleleBalance");
 		command.add("-A");
@@ -311,7 +331,10 @@ public class Util {
 		command.add("30.0");
 		command.add("-stand_emit_conf");
 		command.add("10.0");
-		
+		command.add("-L");
+		command.add(contig);
+		command.add("-BQSR");
+		command.add(bqsrFile);
 		
 		return command;
 	}
@@ -420,5 +443,20 @@ public class Util {
 			resultFiles.addAll(task.uploadResults(list,workingDir, helper.getOutputFile()));
 		}
 		return resultFiles;
+	}
+	
+	public static String getContigForFile(String bamFile){
+		String contig = "chr22";
+		
+		SamReader reader = SamReaderFactory.makeDefault().open(new File(bamFile));
+		
+		SAMRecordIterator iterator = reader.iterator();
+		while(iterator.hasNext()){
+			SAMRecord record = iterator.next();
+			if(record.getContig()!=null)
+				return record.getContig();
+		}
+		
+		return contig;
 	}
 }

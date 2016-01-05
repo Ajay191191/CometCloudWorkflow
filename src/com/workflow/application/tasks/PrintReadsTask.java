@@ -30,9 +30,9 @@ public class PrintReadsTask implements Task {
 //				inputFiles.add(stagingLocation + File.separator + inputFile);
 			}
 		}
-		List<FileProperties> resultFiles=null;
-		if(inputFiles.size()>1){
-			return new Object[]{"FAIL",resultFiles};
+		List<FileProperties> resultFiles=new ArrayList<>();
+		if(inputFiles.size()>1 || inputFiles.size()==0){
+			return new Object[]{"OK",resultFiles};
 		}
 		Object calibratedCSV = helper.getNthObjectFromList(3);
 		if(calibratedCSV instanceof FileProperties){

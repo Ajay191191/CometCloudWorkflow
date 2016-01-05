@@ -11,6 +11,7 @@ import tassl.application.cometcloud.WorkflowTaskTuple;
 
 import com.workflow.application.helper.InputHelper;
 import com.workflow.application.tasks.Task;
+import com.workflow.application.util.Util;
 
 public class WorkerTask extends WorkflowMeteorGenericWorker {
 
@@ -22,7 +23,6 @@ public class WorkerTask extends WorkflowMeteorGenericWorker {
 	    Logger.getLogger(WorkerTask.class.getName()).log(Level.INFO,"" + inputHelper);
 	    
 	    String workingdir=System.getProperty("WorkingDir");
-	    
 	    HashMap <String,List>inputsHash= inputHelper.getInputsHash();
 	    
 	    //retrieve all input files, we make a call per data source
@@ -31,8 +31,11 @@ public class WorkerTask extends WorkflowMeteorGenericWorker {
 	        String status=this.getFile(true, site, inputsHash.get(site), workingdir);;
 	    }
 	    
-	    Task task = inputHelper.getTask();
+	    Util.initFilePaths(System.getProperty("bwaExecutable"), System.getProperty("samtoolsExecutable"), System.getProperty("gatkJar"), System.getProperty("referenceFastqFile"), System.getProperty("dbsnpFile"));
+	    Logger.getLogger(WorkerTask.class.getName()).log(Level.INFO,"Vars: "  + System.getProperty("bwaExecutable") + System.getProperty("samtoolsExecutable") + System.getProperty("gatkJar") + System.getProperty("referenceFastqFile") + System.getProperty("dbsnpFile"));
+
 	    
+	    Task task = inputHelper.getTask();
 	    
 	    return task.performTask(inputHelper,this);
 	}

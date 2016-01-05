@@ -42,13 +42,13 @@
   </stage>
   <stage id="S5" type="Results" value="jz362@dell01:/cac/u01/jz362/cometcloud/output/" zone="zoneA" site="clusterTest" constraint=""/>
   
-  <stage id="S6" type="AppGenerateClass" value="com.workflow.application.GeneratorTask" method="prepareBaseRecalibrator"/>
+  <!-- <stage id="S6" type="AppGenerateClass" value="com.workflow.application.GeneratorTask" method="prepareBaseRecalibrator"/>
   <stage id="S6" type="PropertyFile" value="./sample.properties"/>
   <stage id="S6" type="Application" value="Workflow"/>
   <stage id="S6" type="InputData">
 	<InputData value="jz362@dell01:/cac/u01/jz362/cometcloud/inputs/" zone="zoneA" site="clusterTest"  constraint=""/>    
   </stage>
-  <stage id="S6" type="Results" value="jz362@dell01:/cac/u01/jz362/cometcloud/output/" zone="zoneA" site="clusterTest" constraint=""/>
+  <stage id="S6" type="Results" value="jz362@dell01:/cac/u01/jz362/cometcloud/output/" zone="zoneA" site="clusterTest" constraint=""/> -->
   
   <stage id="S7" type="AppGenerateClass" value="com.workflow.application.GeneratorTask" method="BaseRecalibrator"/>
   <stage id="S7" type="PropertyFile" value="./sample.properties"/>
@@ -58,13 +58,13 @@
   </stage>
   <stage id="S7" type="Results" value="jz362@dell01:/cac/u01/jz362/cometcloud/output/" zone="zoneA" site="clusterTest" constraint=""/>
   
-  <stage id="S8" type="AppGenerateClass" value="com.workflow.application.GeneratorTask" method="printReads"/>
+  <!-- <stage id="S8" type="AppGenerateClass" value="com.workflow.application.GeneratorTask" method="printReads"/>
   <stage id="S8" type="PropertyFile" value="./sample.properties"/>
   <stage id="S8" type="Application" value="Workflow"/>
   <stage id="S8" type="InputData">
 	<InputData value="jz362@dell01:/cac/u01/jz362/cometcloud/inputs/" zone="zoneA" site="clusterTest"  constraint=""/>    
   </stage>
-  <stage id="S8" type="Results" value="jz362@dell01:/cac/u01/jz362/cometcloud/output/" zone="zoneA" site="clusterTest" constraint=""/>
+  <stage id="S8" type="Results" value="jz362@dell01:/cac/u01/jz362/cometcloud/output/" zone="zoneA" site="clusterTest" constraint=""/> -->
   
   <stage id="S9" type="AppGenerateClass" value="com.workflow.application.GeneratorTask" method="haplotypeCaller"/>
   <stage id="S9" type="PropertyFile" value="./sample.properties"/>
@@ -81,9 +81,9 @@
      <objective id="S3" type="MinRunningTime" value="1377" />
      <!-- <objective id="S4" type="MinRunningTime" value="1377" /> -->
      <objective id="S5" type="MinRunningTime" value="1377" />
-     <objective id="S6" type="MinRunningTime" value="1377" />
+     <!-- <objective id="S6" type="MinRunningTime" value="1377" /> -->
      <objective id="S7" type="MinRunningTime" value="1377" />
-     <objective id="S8" type="MinRunningTime" value="1377" />
+     <!-- <objective id="S8" type="MinRunningTime" value="1377" /> -->
      <objective id="S9" type="MinRunningTime" value="1377" />
 </objectives>
 <transitions>
@@ -92,9 +92,9 @@
         <transition from="S2" to="S3" blocking="false"/>
         <!-- <transition from="S3" to="S4" blocking="false"/> -->
         <transition from="S3" to="S5" blocking="true"/>
-        <transition from="S5" to="S6" blocking="true"/>
-        <transition from="S6" to="S7" blocking="false"/>
-        <transition from="S7" to="S8" blocking="false"/>
-        <transition from="S8" to="S9" blocking="false"/>
+        <!-- <transition from="S5" to="S6" blocking="true"/> -->
+        <transition from="S5" to="S7" blocking="true"/>
+        <!-- <transition from="S7" to="S8" blocking="false"/> -->
+        <transition from="S7" to="S9" blocking="false"/>
 </transitions>
 </xflow>
