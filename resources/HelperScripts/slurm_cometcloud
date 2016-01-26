@@ -1,0 +1,63 @@
+#!/bin/bash
+
+####### DO NOT EDIT THIS SECTION
+
+#SBATCH --clusters=mae
+#SBATCH --partition=planex
+#SBATCH --account=pi-jzola
+#SBATCH --exclusive
+
+####### CUSTOMIZE THIS SECTION FOR YOUR JOB
+####### KEEP --mem=64000 TO USE FULL MEMORY
+
+#SBATCH --mem=64000
+#SBATCH --job-name="cometcloud"
+#SBATCH --nodes=18
+## SBATCH --ntasks-per-node=20
+##SBATCH --output=%j.stdout
+##SBATCH --error=%j.stderr
+#SBATCH --time=72:00:00
+
+SIMPLERUNDIRECTORY=/user/ajaysudh/cometWorkflow08052015/simple_run
+
+module load gnu-parallel/2015.06.22 
+module load java/1.7.0_25
+
+#srun -n $SLURM_NPROCS hostname
+#./openSshPortsAgent.s0
+
+NODES=(`srun hostname | sort`)
+
+
+NUM_NODES=${#NODES[@]}
+LAST=$((NUM_NODES - 1))
+
+WORKFLOW_MANAGER_LOGFILE="`pwd`/workflowManager.log"
+MASTER_LOGFILE="`pwd`/master.log"
+AGENT_LOGFILE="`pwd`/agent.log"
+
+hosts=""
+echo $LAST
+echo $NODES
+echo $NUM_NODES
+for i in `seq 2 $LAST`
+do
+	hosts+="${NODES[$i]} "
+done
+
+
+edit_config.sh ${NODES[0]} ${NODES[0]} ${NODES[1]} $hosts
+
+ssh ajaysudh@${NODES[0]} "./workflow.sh  > $WORKFLOW_MANAGER_LOGFILE 2>&1" &
+sleep 2s
+ssh ajaysudh@${NODES[0]} "./master.sh  > $MASTER_LOGFILE 2>&1" &
+sleep 2s
+ssh ajaysudh@${NODES[1]} "./agent.sh > $AGENT_LOGFILE 2>&1" &
+sleep 2s 
+
+cd $SIMPLERUNDIRECTORY/client/
+export CLASSPATH=../../dist/*:../../lib/*
+java -cp $CLASSPATH tassl.application.workflow.WorkflowClient -serverPort 8888 -serverAddress ${NODES[0]} -regWorkflow Workflow.xml
+
+
+sleep 72h
