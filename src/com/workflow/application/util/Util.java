@@ -3,12 +3,16 @@ package com.workflow.application.util;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -17,6 +21,12 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteException;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.PumpStreamHandler;
 
 import com.google.common.collect.Lists;
 import com.workflow.application.WorkerTask;
@@ -42,14 +52,23 @@ public class Util {
 	public static String ReferenceFile;
 	public static String DBSNPFile;
 	
+	static {
+		BWAExecutable = "/util/academic/bwa/bwa-0.7.12/bwa";
+		SAMTOOLSExecutable = "/util/academic/samtools/samtools-1.1/samtools";
+		GATKJar = "/util/academic/gatk/gatk-protected/target/GenomeAnalysisTK.jar";
+		ReferenceFile = "/projects/academic/jzola/ajaysudh/data/Reference/hg19.fasta";
+		DBSNPFile = "/projects/academic/jzola/ajaysudh/data/dbsnp/dbsnp_137.hg19.vcf";
+		HelperConstants.numberOfThreads = Runtime.getRuntime().availableProcessors();
+	}
+	
 	public static void initFilePaths(String bwa, String samtools, String gatk, String reference, String dbsnp){
-		BWAExecutable = bwa==null?System.getenv("bwaExecutable"):bwa;
+		/*BWAExecutable = bwa==null?System.getenv("bwaExecutable"):bwa;
 		SAMTOOLSExecutable = samtools==null?System.getenv("samtoolsExecutable"):samtools;
 		GATKJar = gatk==null?System.getenv("gatkJar"):gatk;
 		ReferenceFile = reference==null?System.getenv("referenceFastqFile"):reference;
 		DBSNPFile = dbsnp==null?System.getenv("dbsnpFile"):dbsnp;
-//		BWAExecutable = "bwa";
-//		SAMTOOLSExecutable = "samtools";
+*/
+				
 		HelperConstants.numberOfThreads = Runtime.getRuntime().availableProcessors();
 	}
 	
@@ -117,13 +136,14 @@ public class Util {
 		return command;
 	}
 
-	public static void writeShAndStartProcess(List<String> commands,String workingDir, double random,String nameExtension){
+	public static boolean writeShAndStartProcess(List<String> commands,String workingDir, double random,String nameExtension){
 		StringBuilder builder = new StringBuilder();
 		for(String command:commands){
 			builder.append(command+" ");
 		}
 		String shFile = random+nameExtension;
-		try(BufferedWriter writer = new BufferedWriter(new FileWriter(new File(workingDir,shFile)))){
+		File shellFile = new File(workingDir,shFile);
+		try(BufferedWriter writer = new BufferedWriter(new FileWriter(shellFile))){
 			writer.write("#!/bin/sh");
 			writer.write("\n");
 			writer.write(builder.toString());
@@ -134,7 +154,18 @@ public class Util {
 		
 		builder = null;
 		
-		runProcessWithShell(workingDir, shFile);
+		Set<PosixFilePermission> perms = new HashSet<PosixFilePermission>();
+		perms.add(PosixFilePermission.OWNER_READ);
+        perms.add(PosixFilePermission.OWNER_WRITE);
+        perms.add(PosixFilePermission.OWNER_EXECUTE);
+        
+        try {
+			Files.setPosixFilePermissions(shellFile.toPath(), perms);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        
+		return runProcessWithShell(workingDir, shFile);
 	}
 	
 	public static List<String> getRealignerTargetCreatorCommand(String inputBam,String outputFile){
@@ -339,11 +370,49 @@ public class Util {
 		return command;
 	}
 	
-	public static void runProcessWithShell(String workingDir,String shFile){
-		ProcessBuilder pb = new ProcessBuilder(Arrays.asList("bash",workingDir+File.separator+shFile));
-		
-		runProcess(pb);
+	public static boolean runProcessWithShell(String workingDir,String shFile){
+//		ProcessBuilder pb = new ProcessBuilder(Arrays.asList("bash",workingDir+File.separator+shFile));
+//		runProcess(pb);
+//		runWithRuntimeExec(workingDir+File.separator+shFile);
+		return runScript(workingDir+File.separator+shFile);
+//		return startNewProcessAndRunScript(workingDir, shFile);
 	}
+	
+	public static boolean startNewProcessAndRunScript(String workingDir,String shFile){
+		return runScript("java -Xms512m -Xmx32G -cp " + System.getProperty("java.class.path") + " com.workflow.application.util.ScriptRunner " + workingDir + " " + shFile);
+	}
+	
+	public static boolean runScript(String command){
+		System.out.println("Command for Executor: " + command);
+		Thread runningThread = createRunningTaskThread();
+		runningThread.start();
+        CommandLine cmdLine = CommandLine.parse(command);
+        
+        DefaultExecutor defaultExecutor = new DefaultExecutor();
+        defaultExecutor.setExitValue(0);
+
+        ExecuteWatchdog watchdog = new ExecuteWatchdog(180000);
+        defaultExecutor.setWatchdog(watchdog);
+        
+        PumpStreamHandler streamHandler = new PumpStreamHandler(System.out);
+        defaultExecutor.setStreamHandler(streamHandler);
+        int exitValue=-1;
+		try {
+            exitValue = defaultExecutor.execute(cmdLine);
+            
+        } catch (ExecuteException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (!(defaultExecutor.isFailure(exitValue) && watchdog.killedProcess())) {
+        	System.out.println("Exit Value: " + exitValue);
+        	runningThread.interrupt();
+        	return true;
+        }
+        return false;
+    }
+
 	
 	public static void runProcessWithListOfCommands(List<String> command){
 		ProcessBuilder pb = new ProcessBuilder(command);
@@ -353,34 +422,55 @@ public class Util {
 	}
 
 	private static void runProcess(ProcessBuilder pb) {
+		Process process=null;
+		
+		Thread runnable = createRunningTaskThread();
+		runnable.start();
 		try {
-			Process process = pb.start();
-			
-			int exitValue = process.waitFor();
-			final InputStream errorStream = process.getErrorStream();
+			pb.redirectErrorStream(true);
+			process = pb.start();
+			/*final InputStream errorStream = process.getErrorStream();
 			new Runnable() {
 				
 				@Override
 				public void run() {
 					extracted(errorStream);
 				}
-			}.run();
-			final InputStream inputStream = process.getInputStream();
-			new Runnable(){
-
-				@Override
-				public void run() {
-					
-					extracted(inputStream);
-				}
-				
-			}.run();
-			Logger.getLogger(Util.class.getName()).log(Level.INFO,"Exit Value: "+ exitValue);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+			}.run();*/
+			/*final InputStream inputStream = process.getInputStream();
+			extracted(inputStream);*/
+            try (InputStream is = process.getInputStream()) {
+                int c;
+                while ((c = is.read()) != -1) {
+                	System.out.print((char)c);
+                }
+            }
+            int exitValue = process.waitFor();
+            runnable.interrupt();
+            Logger.getLogger(Util.class.getName()).log(Level.INFO,"Exit Value: "+ exitValue);
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
+	}
+
+	private static Thread createRunningTaskThread() {
+		Thread runnable = new Thread(new Runnable(){
+
+			@Override
+			public void run() {
+				while(!Thread.currentThread().isInterrupted()){
+					System.out.println("Running the task...");
+					try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+					}
+				}
+			}
+		});
+		return runnable;
 	}
 	
 
@@ -458,5 +548,10 @@ public class Util {
 		}
 		
 		return contig;
+	}
+	
+	public static long getFileSize(String path) {
+		File file = new File(path);
+		return file.length();
 	}
 }

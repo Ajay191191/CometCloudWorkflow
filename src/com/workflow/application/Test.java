@@ -1,7 +1,10 @@
 package com.workflow.application;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.workflow.application.util.Util;
 
 public class Test {
 
@@ -79,14 +82,10 @@ public class Test {
 		System.out.println(list);*/
 		
 		
-		int [][]curr = new int[100][100];
-		for(int i=1;i<100;i++){
-			for(int j=1;j<100;j++){
-				curr[i][j]=1;
-			}
-		}
-		List<String>  list = new ArrayList<>();
-//		List<Integer>  list = new ArrayList<>();
+//		Util.runProcessWithShell(".", args[0]);
+		
+		Util.startNewProcessAndRunScript(args[0], args[1]);
+		
 	}
 	
 	

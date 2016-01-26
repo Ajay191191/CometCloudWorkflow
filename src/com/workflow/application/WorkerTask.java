@@ -31,10 +31,6 @@ public class WorkerTask extends WorkflowMeteorGenericWorker {
 	        String status=this.getFile(true, site, inputsHash.get(site), workingdir);;
 	    }
 	    
-	    Util.initFilePaths(System.getProperty("bwaExecutable"), System.getProperty("samtoolsExecutable"), System.getProperty("gatkJar"), System.getProperty("referenceFastqFile"), System.getProperty("dbsnpFile"));
-	    Logger.getLogger(WorkerTask.class.getName()).log(Level.INFO,"Vars: "  + System.getProperty("bwaExecutable") + System.getProperty("samtoolsExecutable") + System.getProperty("gatkJar") + System.getProperty("referenceFastqFile") + System.getProperty("dbsnpFile"));
-
-	    
 	    Task task = inputHelper.getTask();
 	    
 	    return task.performTask(inputHelper,this);
