@@ -1,10 +1,23 @@
 package com.workflow.application;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
-import com.workflow.application.util.Util;
+import org.apache.commons.codec.digest.DigestUtils;
+
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
 
 public class Test {
 
@@ -84,8 +97,52 @@ public class Test {
 		
 //		Util.runProcessWithShell(".", args[0]);
 		
-		Util.startNewProcessAndRunScript(args[0], args[1]);
+//		Util.startNewProcessAndRunScript(args[0], args[1]);
 		
+		/*Object [] streams=new Object[2];
+        DataOutputStream out = null;
+        DataInputStream in = null;
+        try {
+            Socket clientSocket = new Socket(args[0], Integer.parseInt(args[1]));
+            out = new DataOutputStream(clientSocket.getOutputStream());
+            in = new DataInputStream(clientSocket.getInputStream());
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, "ERROR contacting "+args[0]+":"+args[1], ex.getMessage());
+        } catch (IOException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, "ERROR contacting "+args[0]+":"+args[1], ex.getMessage());
+        }
+        streams[0]=in;
+        streams[1]=out;*/
+		
+
+		try {
+			AmazonS3 s3Client = new AmazonS3Client(new BasicAWSCredentials("AKIAJGFR6YNHCHWN5M3Q", "IYxNBCd23pSJlXFWXxCuI3by6ukuEQlDp5inLgPt"));
+			S3Object object = s3Client.getObject(new GetObjectRequest("bioreference", "hg19.fasta.amb"));
+			String md5Hex = DigestUtils.md5Hex(new FileInputStream(new File("/home/ajay/hg19.fasta.amb")));
+			System.out.println(md5Hex);
+			System.out.println(object.getObjectMetadata().getETag());
+			
+			/*InputStream objectData = object.getObjectContent();
+			FileOutputStream outputStream = new FileOutputStream(new File("/home/ajay/hg19.fasta.amb"));
+			
+			
+			int read = -1;
+
+			while ( ( read = objectData.read() ) != -1 ) {
+				outputStream.write(read);
+			}
+
+			outputStream.close();
+			// Process the objectData stream.
+			objectData.close();
+*/			
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+        
 	}
 	
 	

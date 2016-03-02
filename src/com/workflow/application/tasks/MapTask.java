@@ -6,12 +6,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import tassl.application.cometcloud.FileProperties;
-
-import com.workflow.application.GeneratorTask;
 import com.workflow.application.WorkerTask;
 import com.workflow.application.helper.InputHelper;
 import com.workflow.application.util.Util;
+
+import tassl.application.cometcloud.FileProperties;
 
 public class MapTask implements Task{
 

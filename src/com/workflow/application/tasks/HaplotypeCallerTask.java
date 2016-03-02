@@ -26,8 +26,13 @@ public class HaplotypeCallerTask implements Task {
 		for(String location: helper.getInputsHash().keySet()){
 			List<String> files = helper.getInputsHash().get(location);
 			for(String inputFile:files){
-				if(!inputFile.endsWith(".bai"))
-					inputFiles.add(stagingLocation+File.separator + inputFile);
+				if(inputFile.endsWith(".bam")) {
+					String input = Util.getStagingLocation(stagingLocation, workingDir, inputFile);
+					inputFiles.add(input);
+					if(!Util.ifIndexExistsForBAM(input)){
+						Util.indexBAM(input);
+					}
+				}
 			}
 		}
 		List<FileProperties> resultFiles=new ArrayList<>();

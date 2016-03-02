@@ -3,9 +3,7 @@ package com.workflow.application;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -164,6 +162,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 			if(inputFile.getName().contains("_calibration.csv")){
 				continue;
 			}
+			inputs.add(calibratedCSVFile);
 			inputs.add(inputFile);
 			inputList.add(inputs);
 			taskParams.add(taskid, Arrays.asList(method,output, inputs,calibratedCSVFile));

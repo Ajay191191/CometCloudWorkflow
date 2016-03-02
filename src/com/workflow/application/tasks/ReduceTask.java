@@ -4,12 +4,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import picard.sam.markduplicates.MarkDuplicates;
-import tassl.application.cometcloud.FileProperties;
-
 import com.workflow.application.WorkerTask;
 import com.workflow.application.helper.InputHelper;
 import com.workflow.application.util.Util;
+
+import picard.sam.markduplicates.MarkDuplicates;
+import tassl.application.cometcloud.FileProperties;
 
 public class ReduceTask implements Task{
 

@@ -1,24 +1,16 @@
 package com.workflow.application.tasks;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import tassl.application.cometcloud.FileProperties;
-
 import com.workflow.application.WorkerTask;
 import com.workflow.application.helper.InputHelper;
-import com.workflow.application.tasks.worker.ContigSplitBAMWorker;
-import com.workflow.application.tasks.worker.PoolFactory;
-import com.workflow.application.tasks.worker.Worker;
 import com.workflow.application.util.Util;
+
+import tassl.application.cometcloud.FileProperties;
 
 public class IndexPrepare implements Task {
 
@@ -32,13 +24,19 @@ public class IndexPrepare implements Task {
 		String outputDir = random + "_"+System.getProperty("Name");
 		List<String> inputFiles = new ArrayList<>();
 		List<String> outfiles=new ArrayList<String>();
-		
+
+		String stagingLocation = helper.getInputLocation();
 		
 		for(String location: helper.getInputsHash().keySet()){
 			List<String> files = helper.getInputsHash().get(location);
 			for(String inputFile:files){
-				if(!inputFile.endsWith(".bai"))
-					inputFiles.add(inputFile);
+				if(!inputFile.endsWith(".bai")){
+					String input = Util.getStagingLocation(stagingLocation, workingDir, inputFile);
+					inputFiles.add(input);
+					if(!Util.ifIndexExistsForBAM(input)){
+						Util.indexBAM(input);
+					}
+				}
 //				outfiles.add(new File(inputFile).getName());
 			}
 		}
@@ -46,10 +44,8 @@ public class IndexPrepare implements Task {
 		List<FileProperties> resultFiles=new ArrayList<>();
 		if(inputFiles.size()>1 || inputFiles.size()==0)
 			return new Object[]{"OK",resultFiles};
-		String stagingLocation = helper.getInputLocation();
 		
-		
-		List<String> contigsListCommand = Util.getContigsListCommand(stagingLocation + inputFiles.get(0));
+		List<String> contigsListCommand = Util.getContigsListCommand(Util.getStagingLocation(stagingLocation, workingDir, inputFiles.get(0)));
 		contigsListCommand.add(workingDir + File.separator + outputContigsFile);
 		
 		Util.writeShAndStartProcess(contigsListCommand, workingDir, random, "_getContigs.sh");
@@ -63,13 +59,13 @@ public class IndexPrepare implements Task {
 				outfiles.add(str);
 			}
 		}*/
-		List<String> splitBAMbyChromosome = Util.splitBAMbyChromosome(new File(workingDir + File.separator +outputContigsFile),stagingLocation +  inputFiles.get(0));
+		List<String> splitBAMbyChromosome = Util.splitBAMbyChromosome(new File(workingDir + File.separator +outputContigsFile),Util.getStagingLocation(stagingLocation, workingDir, inputFiles.get(0)));
 		outfiles.addAll(splitBAMbyChromosome);
-		List<String> baiFiles = new ArrayList<>();
-		for(String splitBam:splitBAMbyChromosome){
-			baiFiles.add(splitBam+".bai");
-		}
-		task.uploadResults(baiFiles, workingDir, helper.getOutputFile());
+//		List<String> baiFiles = new ArrayList<>();
+		/*for(String splitBam:splitBAMbyChromosome){
+			outfiles.add(splitBam+".bai");
+		}*/
+//		task.uploadResults(baiFiles, workingDir, helper.getOutputFile());
 		
 		resultFiles=task.uploadResults(outfiles, workingDir, helper.getOutputFile());
     	return new Object[]{"OK",resultFiles};

@@ -4,11 +4,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import tassl.application.cometcloud.FileProperties;
-
 import com.workflow.application.WorkerTask;
 import com.workflow.application.helper.InputHelper;
 import com.workflow.application.util.Util;
+
+import tassl.application.cometcloud.FileProperties;
 
 public class IndexTask implements Task {
 

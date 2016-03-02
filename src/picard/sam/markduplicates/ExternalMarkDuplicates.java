@@ -1,6 +1,20 @@
 package picard.sam.markduplicates;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.TreeSet;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
 import htsjdk.samtools.DuplicateScoringStrategy;
+import htsjdk.samtools.DuplicateScoringStrategy.ScoringStrategy;
 import htsjdk.samtools.ReservedTagConstants;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFileWriter;
@@ -8,27 +22,16 @@ import htsjdk.samtools.SAMFileWriterFactory;
 import htsjdk.samtools.SAMReadGroupRecord;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMTag;
-import htsjdk.samtools.DuplicateScoringStrategy.ScoringStrategy;
 import htsjdk.samtools.util.CloseableIterator;
 import htsjdk.samtools.util.IOUtil;
 import htsjdk.samtools.util.Log;
 import htsjdk.samtools.util.ProgressLogger;
 import htsjdk.samtools.util.SortingCollection;
 import htsjdk.samtools.util.SortingLongCollection;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
 import picard.cmdline.CommandLineProgramProperties;
 import picard.cmdline.Option;
 import picard.cmdline.programgroups.SamOrBam;
 import picard.sam.DuplicationMetrics;
-import picard.sam.markduplicates.MarkDuplicates.ReadEndsMDComparator;
 import picard.sam.markduplicates.util.AbstractMarkDuplicatesCommandLineProgram;
 import picard.sam.markduplicates.util.DiskBasedReadEndsForMarkDuplicatesMap;
 import picard.sam.markduplicates.util.LibraryIdGenerator;
@@ -38,7 +41,6 @@ import picard.sam.markduplicates.util.ReadEndsForMarkDuplicatesCodec;
 import picard.sam.markduplicates.util.ReadEndsForMarkDuplicatesMap;
 import picard.sam.markduplicates.util.ReadEndsForMarkDuplicatesWithBarcodes;
 import picard.sam.markduplicates.util.ReadEndsForMarkDuplicatesWithBarcodesCodec;
-import picard.sam.markduplicates.util.AbstractMarkDuplicatesCommandLineProgram.SamHeaderAndIterator;
 
 @CommandLineProgramProperties(
         usage = "Examines aligned records in the supplied SAM or BAM file to locate duplicate molecules. " +
@@ -106,6 +108,8 @@ public class ExternalMarkDuplicates extends AbstractMarkDuplicatesCommandLinePro
     public static void main(final String[] args) {
         new ExternalMarkDuplicates().instanceMainWithExit(args);
     }
+    
+    long index = 0;
 
     /**
      * Main work method.  Reads the BAM file once and collects sorted information about
@@ -278,18 +282,34 @@ public class ExternalMarkDuplicates extends AbstractMarkDuplicatesCommandLinePro
 
         final SamHeaderAndIterator headerAndIterator = openInputs();
         final SAMFileHeader header = headerAndIterator.header;
-        final ReadEndsForMarkDuplicatesMap tmp = new DiskBasedReadEndsForMarkDuplicatesMap(MAX_FILE_HANDLES_FOR_READ_ENDS_MAP, diskCodec);
-        long index = 0;
+        final MemoryBasedReadEndsForMarkDuplicatesMap tmp = new MemoryBasedReadEndsForMarkDuplicatesMap(/*MAX_FILE_HANDLES_FOR_READ_ENDS_MAP, diskCodec*/);
         final ProgressLogger progress = new ProgressLogger(log, (int) 1e6, "Read");
         final CloseableIterator<SAMRecord> iterator = headerAndIterator.iterator;
 
         if (null == this.libraryIdGenerator) {
             this.libraryIdGenerator = new LibraryIdGenerator(header);
         }
+        
+/*        System.out.println("Obtaining");
+        Iterable<SAMRecord> iterable = () -> iterator;
+        Stream<SAMRecord> targetStream = StreamSupport.stream(iterable.spliterator(), true);*/
+        
+        Stream<SAMRecord> targetStream = StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED | Spliterator.SORTED),
+                true);
+      
+        System.out.println("Obtained");
+        
+        final Set<String> keyList = new TreeSet<String>();
+//      while (iterator.hasNext()) {}
 
-        Set<String> keyList = new TreeSet<String>();
-        while (iterator.hasNext()) {
-            final SAMRecord rec = iterator.next();
+/*        targetStream.parallel().forEach(rec -> {
+        	System.out.println("rec " + rec.getStart() + " Thread " + Thread.currentThread().getName());
+        });
+*/        
+        targetStream.parallel().forEach(rec -> {
+
+//            final SAMRecord rec = iterator.next();
 
             // This doesn't have anything to do with building sorted ReadEnd lists, but it can be done in the same pass
             // over the input
@@ -305,14 +325,14 @@ public class ExternalMarkDuplicates extends AbstractMarkDuplicatesCommandLinePro
             if (rec.getReadUnmappedFlag()) {
                 if (rec.getReferenceIndex() == -1) {
                     // When we hit the unmapped reads with no coordinate, no reason to continue.
-                    break;
+                    return;
                 }
                 // If this read is unmapped but sorted with the mapped reads, just skip it.
             } else if (!rec.isSecondaryOrSupplementary()) {
                 final ReadEndsForMarkDuplicates fragmentEnd = buildReadEnds(header, index, rec, useBarcodes);
                 final String key = rec.getAttribute(ReservedTagConstants.READ_GROUP_ID) + ":" + rec.getReadName();
                 if(keyList.contains(key)){
-                	continue;
+                	return;
                 }
                 keyList.add(key);
                 this.fragSort.add(fragmentEnd);
@@ -372,7 +392,9 @@ public class ExternalMarkDuplicates extends AbstractMarkDuplicatesCommandLinePro
             if (progress.record(rec)) {
                 log.info("Tracking " + tmp.size() + " as yet unmatched pairs. " + tmp.sizeInRam() + " records in RAM.");
             }
-        }
+        
+        });
+        
 
         log.info("Read " + index + " records. " + tmp.size() + " pairs never matched.");
         iterator.close();
@@ -623,6 +645,44 @@ public class ExternalMarkDuplicates extends AbstractMarkDuplicatesCommandLinePro
             if (compareDifference == 0) compareDifference = (int) (lhs.read2IndexInFile - rhs.read2IndexInFile);
 
             return compareDifference;
+        }
+    }
+    
+    class MemoryBasedReadEndsForMarkDuplicatesMap implements ReadEndsForMarkDuplicatesMap {
+
+        /**
+         * Index of this list is sequence index.  Value is map from String {read group id:read name} to ReadEnds.
+         * When a ReadEnds is put into this container, it is stored according to the sequenceIndex of the mate
+         */
+        private final List<Map<String, ReadEndsForMarkDuplicates>> mapPerSequence = new ArrayList<Map<String, ReadEndsForMarkDuplicates>>();
+
+        public ReadEndsForMarkDuplicates remove(int mateSequenceIndex, String key) {
+            if (mateSequenceIndex >= mapPerSequence.size()) {
+                return null;
+            }
+            return mapPerSequence.get(mateSequenceIndex).remove(key);
+        }
+
+        public void put(int mateSequenceIndex, String key, ReadEndsForMarkDuplicates readEnds) {
+            while (mateSequenceIndex >= mapPerSequence.size()) {
+                mapPerSequence.add(new HashMap<String, ReadEndsForMarkDuplicates>());
+            }
+            mapPerSequence.get(mateSequenceIndex).put(key, readEnds);
+        }
+
+        public int size() {
+            int total = 0;
+            for (Map<String, ReadEndsForMarkDuplicates> map : mapPerSequence) {
+                total += map.size();
+            }
+            return total;
+        }
+
+        /**
+         * @return number of elements stored in RAM.  Always <= size()
+         */
+        public int sizeInRam() {
+            return size();
         }
     }
 

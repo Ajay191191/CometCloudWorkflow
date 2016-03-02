@@ -6,10 +6,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.collect.Lists;
 import com.workflow.application.WorkerTask;
 import com.workflow.application.helper.InputHelper;
-import com.workflow.application.tasks.worker.PoolFactory;
 import com.workflow.application.util.Util;
 
 import tassl.application.cometcloud.FileProperties;
@@ -39,7 +37,11 @@ public class BaseRecalibratorTask implements Task {
 //					inputFiles.add(Util.getStagingLocation(stagingLocation,workingDir, inputFile));
 //					inputBams.append(" -I "+Util.getStagingLocation(stagingLocation,workingDir, inputFile)+" ");
 					inputFiles.add("-I");
-					inputFiles.add(Util.getStagingLocation(stagingLocation,workingDir, inputFile));
+					String input = Util.getStagingLocation(stagingLocation,workingDir, inputFile);
+					inputFiles.add(input);
+					if(!Util.ifIndexExistsForBAM(input)){
+						Util.indexBAM(input);
+					}
 					//For now delete after adding split bams:
 //					outputFiles.add(new File(inputFile).getName());
 //					inputFileProperties = helper.getInputFiles().get(0);	//Will have to change this
@@ -67,9 +69,9 @@ public class BaseRecalibratorTask implements Task {
 		List<String> toUpload = new ArrayList<>();
 		resultFiles = new ArrayList<>();
 		for(FileProperties inputFile:helper.getInputFiles()){
-			if(!inputFile.getName().endsWith(".bai")){
-				resultFiles.add(inputFile);
-			}
+			/*if(!inputFile.getName().endsWith(".bai")){
+			}*/
+			resultFiles.add(inputFile);
 		}
 		resultFiles.addAll(task.uploadResults(new ArrayList<>(Arrays.asList(outputFile)), workingDir, helper.getOutputFile()));
 		

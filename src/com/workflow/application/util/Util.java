@@ -3,18 +3,15 @@ package com.workflow.application.util;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +28,6 @@ import org.apache.commons.exec.PumpStreamHandler;
 import com.google.common.collect.Lists;
 import com.workflow.application.WorkerTask;
 import com.workflow.application.helper.InputHelper;
-import com.workflow.application.tasks.IndexPrepare;
 import com.workflow.application.tasks.worker.ContigSplitBAMWorker;
 import com.workflow.application.tasks.worker.PoolFactory;
 import com.workflow.application.tasks.worker.Worker;
@@ -42,6 +38,10 @@ import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
 import tassl.application.cometcloud.FileProperties;
 
+/**
+ * @author ajay
+ *
+ */
 public class Util {
 
 	
@@ -53,11 +53,16 @@ public class Util {
 	public static String DBSNPFile;
 	
 	static {
-		BWAExecutable = "/util/academic/bwa/bwa-0.7.12/bwa";
+		/*BWAExecutable = "/util/academic/bwa/bwa-0.7.12/bwa";
 		SAMTOOLSExecutable = "/util/academic/samtools/samtools-1.1/samtools";
 		GATKJar = "/util/academic/gatk/gatk-protected/target/GenomeAnalysisTK.jar";
 		ReferenceFile = "/projects/academic/jzola/ajaysudh/data/Reference/hg19.fasta";
-		DBSNPFile = "/projects/academic/jzola/ajaysudh/data/dbsnp/dbsnp_137.hg19.vcf";
+		DBSNPFile = "/projects/academic/jzola/ajaysudh/data/dbsnp/dbsnp_137.hg19.vcf";*/
+		BWAExecutable = System.getenv("bwaExecutable")!=null?System.getenv("bwaExecutable"):"/util/academic/bwa/bwa-0.7.12/bwa";
+		SAMTOOLSExecutable = System.getenv("samtoolsExecutable")!=null?System.getenv("samtoolsExecutable"):"/util/academic/samtools/samtools-1.1/samtools";
+		GATKJar = System.getenv("gatkJar")!=null?System.getenv("gatkJar"):"/util/academic/gatk/gatk-protected/target/GenomeAnalysisTK.jar";
+		ReferenceFile = System.getenv("referenceFastqFile")!=null?System.getenv("referenceFastqFile"):"/projects/academic/jzola/ajaysudh/data/Reference/hg19.fasta";
+		DBSNPFile = System.getenv("dbsnpFile")!=null?System.getenv("dbsnpFile"):"/projects/academic/jzola/ajaysudh/data/dbsnp/dbsnp_137.hg19.vcf";
 		HelperConstants.numberOfThreads = Runtime.getRuntime().availableProcessors();
 	}
 	
@@ -78,7 +83,7 @@ public class Util {
     	command.add("mem");
     	command.add("-M");
     	command.add("-t");
-    	command.add("20");
+    	command.add(HelperConstants.numberOfThreads+"");
     	command.add("-R");
     	command.add("\"@RG\\tID:group"+groupID+"\\tSM:SRR622457\\tPL:illumina\\tLB:lib1\\tPU:unit1\"");
     	command.add(ReferenceFile);
@@ -518,6 +523,8 @@ public class Util {
 	}
 	
 	public static String getStagingLocation(String stagingLocation, String workingDir, String inputFile) {
+		if(new File(inputFile).exists())
+			return inputFile;
 		if(new File(stagingLocation + File.separator+ inputFile).exists())
 			return stagingLocation + File.separator+ inputFile;
 		if(new File(workingDir + File.separator+ inputFile).exists())
@@ -554,4 +561,24 @@ public class Util {
 		File file = new File(path);
 		return file.length();
 	}
+	
+	public static void indexBAM(String inputBam){
+		List<String> indexCommand = Util.getIndexCommand();
+		indexCommand.add(inputBam);
+		Util.runProcessWithListOfCommands(indexCommand);
+	}
+	
+	
+	/**
+	 * @param FQN of inputBAM
+	 * @return
+	 */
+	public static boolean ifIndexExistsForBAM(String inputBAM){
+		File input = new File(inputBAM);
+		if(new File(input.getParent()+input.getName()+".bai").exists() || new File(input.getParent()+input.getName().replaceAll(".bam", ".bai")).exists())
+			return true;
+		return false;
+		
+	}
+	
 }
