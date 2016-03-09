@@ -116,7 +116,7 @@ public class Test {
 		
 
 		try {
-			AmazonS3 s3Client = new AmazonS3Client(new BasicAWSCredentials("AKIAJGFR6YNHCHWN5M3Q", "IYxNBCd23pSJlXFWXxCuI3by6ukuEQlDp5inLgPt"));
+			AmazonS3 s3Client = new AmazonS3Client(new BasicAWSCredentials("",""));
 			S3Object object = s3Client.getObject(new GetObjectRequest("bioreference", "hg19.fasta.amb"));
 			String md5Hex = DigestUtils.md5Hex(new FileInputStream(new File("/home/ajay/hg19.fasta.amb")));
 			System.out.println(md5Hex);
