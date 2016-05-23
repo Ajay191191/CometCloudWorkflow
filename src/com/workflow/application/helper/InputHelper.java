@@ -87,9 +87,9 @@ public class InputHelper{
 	}
 	
 	public Task getTask(){
-		if (this.method.equals(HelperConstants.MAP)) {
+		if (this.method.equals(HelperConstants.MAP))
 			return new MapTask();
-		} else if (this.method.equals(HelperConstants.REDUCE)) {
+		else if (this.method.equals(HelperConstants.REDUCE)) {
 			return new ReduceTask();
 		}else if (this.method.equals(HelperConstants.INDEX_PREPARE)) {
 			return new IndexPrepare();

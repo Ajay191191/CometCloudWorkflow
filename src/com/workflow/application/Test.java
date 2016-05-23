@@ -1,24 +1,5 @@
 package com.workflow.application;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import org.apache.commons.codec.digest.DigestUtils;
-
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-
 public class Test {
 
 	public static void main(String args[]) {
@@ -115,14 +96,14 @@ public class Test {
         streams[1]=out;*/
 		
 
-		try {
+		/*try {
 			AmazonS3 s3Client = new AmazonS3Client(new BasicAWSCredentials("",""));
 			S3Object object = s3Client.getObject(new GetObjectRequest("bioreference", "hg19.fasta.amb"));
 			String md5Hex = DigestUtils.md5Hex(new FileInputStream(new File("/home/ajay/hg19.fasta.amb")));
 			System.out.println(md5Hex);
 			System.out.println(object.getObjectMetadata().getETag());
 			
-			/*InputStream objectData = object.getObjectContent();
+			InputStream objectData = object.getObjectContent();
 			FileOutputStream outputStream = new FileOutputStream(new File("/home/ajay/hg19.fasta.amb"));
 			
 			
@@ -135,12 +116,12 @@ public class Test {
 			outputStream.close();
 			// Process the objectData stream.
 			objectData.close();
-*/			
+			
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		
         
 	}

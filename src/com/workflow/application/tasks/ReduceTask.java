@@ -19,7 +19,8 @@ public class ReduceTask implements Task{
 		String workingDir = System.getProperty("WorkingDir");
 		List outfiles=new ArrayList();
 		List<String> parameters=new ArrayList();
-		String outputFile = Math.random()*1000 + "_"+System.getProperty("Name")+"_mdup.bam";
+//		String outputFile = Math.random()*1000 + "_"+System.getProperty("Name")+"_mdup.bam";
+		String outputFile = helper.getOutputFile().getName();
 		String storageLocation = null;
 		String stagingLocation = helper.getInputLocation();
 		System.out.println("Location " + stagingLocation);

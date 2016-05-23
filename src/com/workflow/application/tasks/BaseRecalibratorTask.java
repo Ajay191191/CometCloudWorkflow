@@ -23,7 +23,7 @@ public class BaseRecalibratorTask implements Task {
 		List<String> outputFiles=new ArrayList();
 		double random = Math.random() * 10000;
 		
-		String outputContigsFile = random + "_"+System.getProperty("Name")+"_contigs.txt";
+//		String outputContigsFile = random + "_"+System.getProperty("Name")+"_contigs.txt";
 		String stagingLocation = helper.getInputLocation();
 		
 //		FileProperties inputFileProperties = null;
@@ -50,7 +50,8 @@ public class BaseRecalibratorTask implements Task {
 		}
 		
 		
-		String outputFile = Math.random()*1000 + "_"+System.getProperty("Name")+"_calibration.csv";
+//		String outputFile = Math.random()*1000 + "_"+System.getProperty("Name")+"_calibration.csv";
+		String outputFile = helper.getOutputFile().getName();
 		List<FileProperties> resultFiles=null;
 		/*if(inputFiles.size()>1 || inputFiles.size()==0)
 			return new Object[]{"OK",resultFiles};*/

@@ -68,4 +68,5 @@
         <transition from="S5" to="S7" blocking="true"/>
         <transition from="S7" to="S9" blocking="false"/>
 </transitions>
+<scheduler value="ip:port"/>
 </xflow>

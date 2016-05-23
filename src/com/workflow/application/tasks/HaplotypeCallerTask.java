@@ -20,7 +20,8 @@ public class HaplotypeCallerTask implements Task {
 		String workingDir = System.getProperty("WorkingDir");
 		List<String> inputFiles=new ArrayList();
 		List<String> outputFiles=new ArrayList();
-		String outputvcf = Math.random()*1000+"_"+System.getProperty("Name")+ "_output.vcf";
+//		String outputvcf = Math.random()*1000+"_"+System.getProperty("Name")+ "_output.vcf";
+		String outputvcf = helper.getOutputFile().getName();
 		String stagingLocation = helper.getInputLocation();
 		
 		for(String location: helper.getInputsHash().keySet()){
