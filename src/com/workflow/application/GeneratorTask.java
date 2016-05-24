@@ -115,8 +115,14 @@ public class GeneratorTask extends GenerateTasksAbstract {
 		inputList.add(inputs);
 		taskid++;
 
-		if(method.equals(HelperConstants.BASERECALIBRATOR))
+		//TODO:Get number of contigs from the reference file.
+		if(method.equals(HelperConstants.BASERECALIBRATOR)){
 			outputs.add(new FileProperties("reduce."+workflowId+"."+stageID+".0"+"_calibration.csv",output.getLocation(),123.5, output.getZone(), output.getSitename(), output.getConstraints()));
+			for(int i=0;i<94;i++){
+				outputs.add(new FileProperties("index_prepared."+workflowId+"."+stageID+"."+taskid+"_contig_"+i,output.getLocation(),123.5, output.getZone(), output.getSitename(), output.getConstraints()));
+				taskid++;
+			}
+		}
 		else
 			outputs.add(new FileProperties("reduce."+workflowId+"."+stageID+".0",output.getLocation(),123.5, output.getZone(), output.getSitename(), output.getConstraints()));
 		outputList.add(outputs);
@@ -152,9 +158,21 @@ public class GeneratorTask extends GenerateTasksAbstract {
 			minTime.add(minTimeVal);
 			maxTime.add(maxTimeVal);
 //			inputList.add(inputs);
-			outputs.add(new FileProperties("outputfile."+workflowId+"."+stageID+"."+taskid,output.getLocation(),123.5, output.getZone(), output.getSitename(), output.getConstraints()));
-			outputList.add(outputs);
+			if(!method.equals(HelperConstants.INDEX_PREPARE)){
+				outputs.add(new FileProperties("outputfile."+workflowId+"."+stageID+"."+taskid,output.getLocation(),123.6, output.getZone(), output.getSitename(), output.getConstraints()));
+				outputList.add(outputs);
+			}
 			taskid++;
+		}
+		
+		//TODO: Get contig list from the reference file.
+		if(method.equals(HelperConstants.INDEX_PREPARE)){
+			List<FileProperties> outputs = new ArrayList();
+			for(int i=0;i<94;i++){
+				outputs.add(new FileProperties("index_prepared."+workflowId+"."+stageID+"."+taskid+"_contig_"+i,output.getLocation(),123.5, output.getZone(), output.getSitename(), output.getConstraints()));
+				taskid++;
+			}
+			outputList.add(outputs);
 		}
 		return new GenerateTasksObject(taskParams, taskRequirement, minTime,maxTime, inputList, outputList);
 	}
