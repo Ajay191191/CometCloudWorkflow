@@ -74,7 +74,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
                     outputs.add(outFP);
 	                
 	                double taskDuration=minTimeVal + (Math.random() * (maxTimeVal - minTimeVal));
-	                taskParams.add(taskid, Arrays.asList(method,output,inputs,taskDuration));
+	                taskParams.add(taskid, Arrays.asList(method,outputs,inputs,taskDuration));
 	                taskRequirement.add("large");
 	                minTime.add(minTimeVal);
 	                maxTime.add(maxTimeVal);
@@ -108,7 +108,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 		inputList.add(inputs);
 		double minTimeVal = Double.parseDouble(getProperty("minTime"));
 		double maxTimeVal = Double.parseDouble(getProperty("maxTime"));
-		taskParams.add(taskid, Arrays.asList(method,output, inputs));
+		taskParams.add(taskid, Arrays.asList(method,outputs, inputs));
 		taskRequirement.add("large"); // Requirement
 		minTime.add(minTimeVal);
 		maxTime.add(maxTimeVal);
@@ -153,7 +153,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 			Util.NtoNTasks.add(previousResults.get(key));*/
 			inputs.add(previousResults.get(key));
 			inputList.add(inputs);
-			taskParams.add(taskid, Arrays.asList(method,output, inputs));
+			taskParams.add(taskid, Arrays.asList(method,outputs, inputs));
 			taskRequirement.add("large"); // Requirement
 			minTime.add(minTimeVal);
 			maxTime.add(maxTimeVal);
@@ -209,7 +209,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 			inputs.add(calibratedCSVFile);
 			inputs.add(inputFile);
 			inputList.add(inputs);
-			taskParams.add(taskid, Arrays.asList(method,output, inputs,calibratedCSVFile));
+			taskParams.add(taskid, Arrays.asList(method,outputs, inputs,calibratedCSVFile));
 			taskRequirement.add("large"); // Requirement
 			minTime.add(minTimeVal);
 			maxTime.add(maxTimeVal);
