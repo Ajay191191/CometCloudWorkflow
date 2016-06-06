@@ -21,7 +21,7 @@ import tassl.application.cometcloud.WorkflowTaskTuple;
 
 public class InputHelper{
 	private String method;
-	private FileProperties outputFile;
+	private List<FileProperties> outputFiles;
 	private List<FileProperties> inputFiles;
 	private HashMap <String,List>inputsHash;
 	private WorkflowTaskTuple tasktuple;
@@ -41,12 +41,6 @@ public class InputHelper{
 	public void setMethod(String method) {
 		this.method = method;
 	}
-	public FileProperties getOutputFile() {
-		return outputFile;
-	}
-	public void setOutputFile(FileProperties outputFile) {
-		this.outputFile = outputFile;
-	}
 	public List<FileProperties> getInputFiles() {
 		return inputFiles;
 	}
@@ -56,16 +50,16 @@ public class InputHelper{
 	public Object getNthObjectFromList(int n){
 		return data.get(n);
 	}
-	public InputHelper(String method, FileProperties outputFile,List<FileProperties> inputFiles,WorkflowTaskTuple tasktuple) {
+	public InputHelper(String method, List<FileProperties> outputFiles,List<FileProperties> inputFiles,WorkflowTaskTuple tasktuple) {
 		super();
 		this.method = method;
-		this.outputFile = outputFile;
+		this.setOutputFiles(outputFiles);
 		this.inputFiles = inputFiles;
 		this.tasktuple = tasktuple;
 		this.calculateInputsHash();
 	}
 	public InputHelper(List data, WorkflowTaskTuple tasktuple) {
-		this((String)data.get(0), (FileProperties)data.get(1), (List<FileProperties>)data.get(2),tasktuple);
+		this((String)data.get(0), (List<FileProperties>) data.get(1), (List<FileProperties>)data.get(2),tasktuple);
 		this.data = data;
 	}
 	
@@ -118,12 +112,18 @@ public class InputHelper{
 	
 	@Override
 	public String toString() {
-		return "Method: " + this.method + " Input: " + this.inputFiles + " Output: " + this.outputFile + " TaskTuple: " + this.tasktuple;
+		return "Method: " + this.method + " Input: " + this.inputFiles + " Output: " + this.getOutputFiles() + " TaskTuple: " + this.tasktuple;
 	}
 	public String getInputLocation() {
 		return inputLocation;
 	}
 	public void setInputLocation(String inputLocation) {
 		this.inputLocation = inputLocation;
+	}
+	public List<FileProperties> getOutputFiles() {
+		return outputFiles;
+	}
+	public void setOutputFiles(List<FileProperties> outputFiles) {
+		this.outputFiles = outputFiles;
 	}
 }

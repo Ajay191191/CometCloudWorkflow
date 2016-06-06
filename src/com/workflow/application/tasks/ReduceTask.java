@@ -20,7 +20,7 @@ public class ReduceTask implements Task{
 		List outfiles=new ArrayList();
 		List<String> parameters=new ArrayList();
 //		String outputFile = Math.random()*1000 + "_"+System.getProperty("Name")+"_mdup.bam";
-		String outputFile = helper.getOutputFile().getName();
+		String outputFile = helper.getOutputFiles().get(0).getName();
 		String storageLocation = null;
 		String stagingLocation = helper.getInputLocation();
 		System.out.println("Location " + stagingLocation);
@@ -42,7 +42,7 @@ public class ReduceTask implements Task{
 			
 		}
 		
-		List<FileProperties> resultFiles=task.uploadResults(outfiles,workingDir, helper.getOutputFile());
+		List<FileProperties> resultFiles=task.uploadResults(outfiles,workingDir, helper.getOutputFiles().get(0));
 		return new Object[]{"OK",resultFiles};
 	
 	}

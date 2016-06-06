@@ -537,7 +537,7 @@ public class Util {
 		List<List<String>> partition = Lists.partition(toUpload, size);
 		resultFiles = new ArrayList<>();
 		for(List<String> list:partition){
-			resultFiles.addAll(task.uploadResults(list,workingDir, helper.getOutputFile()));
+			resultFiles.addAll(task.uploadResults(list,workingDir, helper.getOutputFiles().get(0)));
 		}
 		return resultFiles;
 	}

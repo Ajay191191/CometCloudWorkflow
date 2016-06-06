@@ -21,7 +21,7 @@ public class HaplotypeCallerTask implements Task {
 		List<String> inputFiles=new ArrayList();
 		List<String> outputFiles=new ArrayList();
 //		String outputvcf = Math.random()*1000+"_"+System.getProperty("Name")+ "_output.vcf";
-		String outputvcf = helper.getOutputFile().getName();
+		String outputvcf = helper.getOutputFiles().get(0).getName();
 		String stagingLocation = helper.getInputLocation();
 		
 		for(String location: helper.getInputsHash().keySet()){
@@ -47,7 +47,7 @@ public class HaplotypeCallerTask implements Task {
 			Util.runProcessWithListOfCommands(haplotypeCallerCommand);
 			outputFiles.add(outputvcf);
 			
-			resultFiles=task.uploadResults(outputFiles,workingDir, helper.getOutputFile());
+			resultFiles=task.uploadResults(outputFiles,workingDir, helper.getOutputFiles().get(0));
 			Logger.getLogger(HaplotypeCallerTask.class.getName()).log(Level.INFO,"End Haplotype : " + System.currentTimeMillis());
 		}
 		return new Object[]{"OK",resultFiles};

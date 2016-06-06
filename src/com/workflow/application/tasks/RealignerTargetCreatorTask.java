@@ -55,7 +55,7 @@ public class RealignerTargetCreatorTask implements Task {
 		
 		outputFiles.add(outputBam);
 //		outputFiles.add(outputBam.replaceAll(".bam", ".bai"));
-		resultFiles=task.uploadResults(outputFiles,workingDir, helper.getOutputFile());
+		resultFiles=task.uploadResults(outputFiles,workingDir, helper.getOutputFiles().get(0));
 		return new Object[]{"OK",resultFiles};
 	
 	}

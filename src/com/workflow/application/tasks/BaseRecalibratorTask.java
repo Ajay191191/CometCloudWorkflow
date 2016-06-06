@@ -51,7 +51,7 @@ public class BaseRecalibratorTask implements Task {
 		
 		
 //		String outputFile = Math.random()*1000 + "_"+System.getProperty("Name")+"_calibration.csv";
-		String outputFile = helper.getOutputFile().getName();
+		String outputFile = helper.getOutputFiles().get(0).getName();
 		List<FileProperties> resultFiles=null;
 		/*if(inputFiles.size()>1 || inputFiles.size()==0)
 			return new Object[]{"OK",resultFiles};*/
@@ -74,7 +74,7 @@ public class BaseRecalibratorTask implements Task {
 			}*/
 			resultFiles.add(inputFile);
 		}
-		resultFiles.addAll(task.uploadResults(new ArrayList<>(Arrays.asList(outputFile)), workingDir, helper.getOutputFile()));
+		resultFiles.addAll(task.uploadResults(new ArrayList<>(Arrays.asList(outputFile)), workingDir, helper.getOutputFiles().get(0)));
 		
 		
 //		resultFiles.addAll();

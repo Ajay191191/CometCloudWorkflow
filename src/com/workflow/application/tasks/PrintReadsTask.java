@@ -41,7 +41,7 @@ public class PrintReadsTask implements Task {
 			outputFiles.add(outputBAM);
 			outputFiles.add(outputBAM.replaceAll(".bam", ".bai"));
 		}
-		resultFiles =task.uploadResults(outputFiles,workingDir, helper.getOutputFile());
+		resultFiles =task.uploadResults(outputFiles,workingDir, helper.getOutputFiles().get(0));
 		return new Object[]{"OK",resultFiles};
 	
 	}

@@ -67,7 +67,7 @@ public class IndexPrepare implements Task {
 		}*/
 //		task.uploadResults(baiFiles, workingDir, helper.getOutputFile());
 		
-		resultFiles=task.uploadResults(outfiles, workingDir, helper.getOutputFile());
+		resultFiles=task.uploadResults(outfiles, workingDir, helper.getOutputFiles().get(0));
     	return new Object[]{"OK",resultFiles};
 	}
 	

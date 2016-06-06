@@ -37,9 +37,9 @@ public class PrepareBaseRecalibrator implements Task {
 		indexCommand.add(workingDir + File.separator +outputBAM);
 		Util.runProcessWithListOfCommands(indexCommand);
 		outfiles.add(outputBAM);
-		task.uploadResults(new ArrayList<String>(Arrays.asList(outputBAM+".bai")),workingDir, helper.getOutputFile());
+		task.uploadResults(new ArrayList<String>(Arrays.asList(outputBAM+".bai")),workingDir, helper.getOutputFiles().get(0));
 //		outfiles.add(outputBAM.replaceAll("bam", "bai"));
-		List<FileProperties> resultFiles=task.uploadResults(outfiles,workingDir, helper.getOutputFile());
+		List<FileProperties> resultFiles=task.uploadResults(outfiles,workingDir, helper.getOutputFiles().get(0));
 		return new Object[]{"OK",resultFiles};
 	}
 

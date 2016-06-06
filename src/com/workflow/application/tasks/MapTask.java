@@ -34,7 +34,7 @@ public class MapTask implements Task{
     	
     	double random = Math.random() * 10000;
 //		String outputFile = random + "_"+System.getProperty("Name");
-    	String outputFile = helper.getOutputFile().getName();
+    	String outputFile = helper.getOutputFiles().get(0).getName();
  
 		command.addAll(Util.getPipeSortCommand());
     	command.add(workingdir + File.separator + outputFile);
@@ -42,7 +42,7 @@ public class MapTask implements Task{
     	outfiles.add(outputFile+".bam");	//To keep the naming consistent as samtools appends its own bam extension. 
     	
     	if(Util.writeShAndStartProcess(command,workingdir,random,"_bwa.sh") && Util.getFileSize(workingdir+File.separator+outputFile+".bam")>100){
-    		List<FileProperties> resultFiles=task.uploadResults(outfiles, workingdir, helper.getOutputFile());
+    		List<FileProperties> resultFiles=task.uploadResults(outfiles, workingdir, helper.getOutputFiles().get(0));
     		return new Object[]{"OK",resultFiles};
     	}
     	return new Object[]{"ERROR: Fail",null};

@@ -6,8 +6,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 import org.jgrapht.WeightedGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -165,15 +168,20 @@ public class ExternalScheduler implements Runnable{
 	private Object[] process(WeightedGraph<TaskProperties,DefaultWeightedEdge> workflowGraph, HashMap<String,List<WorkerForScheduler>> allAvailableSlots){
 		//TODO: Write the scheduler.
 		HashMap<Pair,WorkerForScheduler> taskToWorkers = new HashMap<>();
-		WorkerForScheduler singleWorker = null;
+		/*WorkerForScheduler singleWorker = null;
 		for(String key : allAvailableSlots.keySet()){
 			singleWorker = allAvailableSlots.get(key).get(0);
 			break;
-		}
+		}*/
+		List<String> keySet = new ArrayList<>(allAvailableSlots.keySet());
+		Random random = new Random();
 		for(DefaultWeightedEdge edge:workflowGraph.edgeSet()){
 			TaskProperties tsource=workflowGraph.getEdgeSource(edge);
 			TaskProperties ttarget=workflowGraph.getEdgeTarget(edge);
-			taskToWorkers.put(new Pair(tsource,ttarget), singleWorker);
+			
+			//Getting a random worker for now.
+			WorkerForScheduler worker = allAvailableSlots.get(keySet.get(random.nextInt(keySet.size()))).get(0);
+			taskToWorkers.put(new Pair(tsource,ttarget), worker);
 		}
 		System.out.println("Sent taskToWorkers"+taskToWorkers);
 		

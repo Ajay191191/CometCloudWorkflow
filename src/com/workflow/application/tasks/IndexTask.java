@@ -32,7 +32,7 @@ public class IndexTask implements Task {
 		indexCommand.addAll(inputFiles);
 //		Util.writeShAndStartProcess(indexCommand, workingDir, Math.random()*1000, "_index.sh");
 		Util.runProcessWithListOfCommands(indexCommand);
-		List<FileProperties> resultFiles=task.uploadResults(outputFiles,workingDir, helper.getOutputFile());
+		List<FileProperties> resultFiles=task.uploadResults(outputFiles,workingDir, helper.getOutputFiles().get(0));
 		return new Object[]{"OK",resultFiles};
 	}
 
