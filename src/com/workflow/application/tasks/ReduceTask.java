@@ -38,7 +38,7 @@ public class ReduceTask implements Task{
 			indexCommand.add(workingDir+File.separator+outputFile);
 			Util.runProcessWithListOfCommands(indexCommand);
 			outfiles.add(outputFile);
-			outfiles.add(outputFile+".bai");
+//			outfiles.add(outputFile+".bai");
 			
 		}
 		

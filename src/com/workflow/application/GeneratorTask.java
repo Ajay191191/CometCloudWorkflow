@@ -3,6 +3,7 @@ package com.workflow.application;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -70,7 +71,7 @@ public class GeneratorTask extends GenerateTasksAbstract {
 	                
 	                String outputFileSuffix = fileParts[1].split("_")[0];
 	                
-	                FileProperties outFP= new FileProperties("outputfile." + workflowId + "." + stageID + "." + outputFileSuffix+"."+taskid, output.getLocation(), Double.parseDouble(fileParts[0]), output.getZone(), output.getSitename(), output.getConstraints());
+	                FileProperties outFP= new FileProperties("outputfile." + workflowId + "." + stageID + "." + outputFileSuffix+"."+taskid+".bam", output.getLocation(), Double.parseDouble(fileParts[0]), output.getZone(), output.getSitename(), output.getConstraints());
                     outputs.add(outFP);
 	                
 	                double taskDuration=minTimeVal + (Math.random() * (maxTimeVal - minTimeVal));
@@ -117,14 +118,16 @@ public class GeneratorTask extends GenerateTasksAbstract {
 
 		//TODO:Get number of contigs from the reference file.
 		if(method.equals(HelperConstants.BASERECALIBRATOR)){
+			System.out.println("InputList base" + previousResults);
 			outputs.add(new FileProperties("reduce."+workflowId+"."+stageID+".0"+"_calibration.csv",output.getLocation(),123.5, output.getZone(), output.getSitename(), output.getConstraints()));
-			for(int i=0;i<94;i++){
-				outputs.add(new FileProperties("index_prepared."+workflowId+"."+stageID+"."+taskid+"_contig_"+i,output.getLocation(),123.5, output.getZone(), output.getSitename(), output.getConstraints()));
+			/*for(int i=0;i<94;i++){
+				outputs.add(new FileProperties("index_prepared."+workflowId+"."+stageID+"."+taskid+"_contig_"+i+".bam",output.getLocation(),123.5, output.getZone(), output.getSitename(), output.getConstraints()));
 				taskid++;
-			}
+			}*/
+			outputs.addAll(previousResults.values());
 		}
 		else
-			outputs.add(new FileProperties("reduce."+workflowId+"."+stageID+".0",output.getLocation(),123.5, output.getZone(), output.getSitename(), output.getConstraints()));
+			outputs.add(new FileProperties("reduce."+workflowId+"."+stageID+".0."+taskid,output.getLocation(),123.5, output.getZone(), output.getSitename(), output.getConstraints()));
 		outputList.add(outputs);
 		
 		return new GenerateTasksObject(taskParams, taskRequirement, minTime,maxTime, inputList, outputList);
@@ -159,14 +162,14 @@ public class GeneratorTask extends GenerateTasksAbstract {
 			maxTime.add(maxTimeVal);
 //			inputList.add(inputs);
 			if(!method.equals(HelperConstants.INDEX_PREPARE)){
-				outputs.add(new FileProperties("outputfile."+workflowId+"."+stageID+"."+taskid,output.getLocation(),123.6, output.getZone(), output.getSitename(), output.getConstraints()));
+				outputs.add(new FileProperties("outputfile."+workflowId+"."+stageID+"."+taskid+".bam",output.getLocation(),123.6, output.getZone(), output.getSitename(), output.getConstraints()));
 				outputList.add(outputs);
 			}else{
 				//TODO: Get contig list from the reference file.
 				if(method.equals(HelperConstants.INDEX_PREPARE)){
 //					List<FileProperties> outputs = new ArrayList();
 					for(int i=0;i<94;i++){
-						outputs.add(new FileProperties("index_prepared."+workflowId+"."+stageID+"."+i+"_contig_"+i,output.getLocation(),123.5, output.getZone(), output.getSitename(), output.getConstraints()));
+						outputs.add(new FileProperties("index_prepared."+workflowId+"."+stageID+"."+i+"_contig_"+i+".bam",output.getLocation(),123.5, output.getZone(), output.getSitename(), output.getConstraints()));
 					}
 					outputList.add(outputs);
 				}
@@ -220,6 +223,6 @@ public class GeneratorTask extends GenerateTasksAbstract {
 			taskid++;
 		}
 		Logger.getLogger(GeneratorTask.class.getName()).log(Level.INFO,"return method " + method);
-		return new GenerateTasksObject(taskParams, taskRequirement, minTime,maxTime, inputList, null);
+		return new GenerateTasksObject(taskParams, taskRequirement, minTime,maxTime, inputList, outputList);
 	}
 }

@@ -55,6 +55,9 @@ public class ExternalScheduler implements Runnable{
 	@Override
 	public void run() {
 		try {
+			String s="asd";
+			System.out.println(s.replaceAll("a", ""));
+			System.out.println(s);
 			wfSchedules = new HashMap<>();
 			ServerSocket socket = new ServerSocket(getPort());
 			while(true){
@@ -82,12 +85,12 @@ public class ExternalScheduler implements Runnable{
 						
 						HashMap<String,List<WorkerForScheduler>> allAvailableSlots = (HashMap<String, List<WorkerForScheduler>>) programming5.io.Serializer.deserialize(availableSlotsdata);
 						System.out.println("Graph");
-						for(DefaultWeightedEdge edge:workflowGraph.edgeSet()){
+						/*for(DefaultWeightedEdge edge:workflowGraph.edgeSet()){
 							TaskProperties tsource=workflowGraph.getEdgeSource(edge);
 							TaskProperties ttarget=workflowGraph.getEdgeTarget(edge);
 							System.out.println((tsource.getTaskId()==-1?"source":tsource.getTaskParam().get(0))+"."+tsource.getTaskId()+" --------"+
 									workflowGraph.getEdgeWeight(edge)+"-------->"+(ttarget.getTaskId()==-1?"source":ttarget.getTaskParam().get(0))+"."+ttarget.getTaskId());
-						}
+						}*/
 						
 						System.out.println("Global slots");
 						System.out.println(allAvailableSlots);
@@ -129,7 +132,9 @@ public class ExternalScheduler implements Runnable{
 							for(Integer taskID:allTasks.keySet()){
 								TaskProperties task = allTasks.get(taskID);
 								
+								System.out.println("Task to schedule: " + task);
 								for(Pair property:currentSchedule.keySet()){
+//									System.out.println(" Comparing task: " + property.getInput() + "  " + property.getOutput());
 									if(task.compareIO(property.getInput()) || task.compareIO(property.getOutput())){
 										taskIDToWorker.put(task.getTaskId(), currentSchedule.get(property));
 										break;
@@ -180,10 +185,11 @@ public class ExternalScheduler implements Runnable{
 			TaskProperties ttarget=workflowGraph.getEdgeTarget(edge);
 			
 			//Getting a random worker for now.
-			WorkerForScheduler worker = allAvailableSlots.get(keySet.get(random.nextInt(keySet.size()))).get(0);
+			List<WorkerForScheduler> workerlist = allAvailableSlots.get(keySet.get(random.nextInt(keySet.size())));
+			WorkerForScheduler worker = workerlist.get(random.nextInt(workerlist.size()));
 			taskToWorkers.put(new Pair(tsource,ttarget), worker);
 		}
-		System.out.println("Sent taskToWorkers"+taskToWorkers);
+//		System.out.println("Sent taskToWorkers"+taskToWorkers);
 		
 		return new Object[]{taskToWorkers};
 	}

@@ -1,5 +1,7 @@
 package com.workflow.application;
 
+import java.util.Random;
+
 public class Test {
 
 	public static void main(String args[]) {
@@ -123,7 +125,11 @@ public class Test {
 			e.printStackTrace();
 		}*/
 		
-        
+		
+		Random random = new Random();
+		while(true){
+			System.out.println(random.nextInt(10000));
+		}
 	}
 	
 	

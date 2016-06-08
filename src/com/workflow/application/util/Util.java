@@ -492,7 +492,7 @@ public class Util {
 	}
 
 	
-	public static List<String> splitBAMbyChromosome(File contigsFile, String inputBAM){
+	public static List<String> splitBAMbyChromosome(File contigsFile, String inputBAM,List<String> outputBAMs){
 		
 		List<String> contigsList = new ArrayList<>(24);
 		String line;
@@ -509,8 +509,10 @@ public class Util {
 		
 		List<Worker<String>>  bamsplitWorker = new ArrayList<>();
 		PoolFactory<String> factory = new PoolFactory<>(bamsplitWorker);
-		for(String contig:contigsList){
-			bamsplitWorker.add(new ContigSplitBAMWorker(contig, inputBAM));
+		for (int i = 0; i < contigsList.size(); i++) {
+			String contig = contigsList.get(i);
+			//			bamsplitWorker.add(new ContigSplitBAMWorker(contig, inputBAM));
+			bamsplitWorker.add(new ContigSplitBAMWorker(contig, inputBAM,outputBAMs.get(i)));
 		}
 		try {
 			List<String> runAndGetResults = factory.runAndGetResults();

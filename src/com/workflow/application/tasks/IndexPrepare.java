@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import com.workflow.application.WorkerTask;
 import com.workflow.application.helper.InputHelper;
@@ -59,7 +60,8 @@ public class IndexPrepare implements Task {
 				outfiles.add(str);
 			}
 		}*/
-		List<String> splitBAMbyChromosome = Util.splitBAMbyChromosome(new File(workingDir + File.separator +outputContigsFile),Util.getStagingLocation(stagingLocation, workingDir, inputFiles.get(0)));
+		List<String> outputBAMs = helper.getOutputFiles().parallelStream().map(file->workingDir+File.separator+file.getName()).collect(Collectors.toList());
+		List<String> splitBAMbyChromosome = Util.splitBAMbyChromosome(new File(workingDir + File.separator +outputContigsFile),Util.getStagingLocation(stagingLocation, workingDir, inputFiles.get(0)),outputBAMs);
 		outfiles.addAll(splitBAMbyChromosome);
 //		List<String> baiFiles = new ArrayList<>();
 		/*for(String splitBam:splitBAMbyChromosome){

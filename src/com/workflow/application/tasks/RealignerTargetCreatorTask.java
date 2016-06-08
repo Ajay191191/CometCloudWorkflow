@@ -42,7 +42,8 @@ public class RealignerTargetCreatorTask implements Task {
 		String randomString = Math.random()*1000 + "_"+System.getProperty("Name");
 		String intervalsFile = randomString+"_output.intervals";
 		
-		String outputBam = randomString+"_realigned.bam";
+//		String outputBam = randomString+"_realigned.bam";
+		String outputBam = helper.getOutputFiles().get(0).getName();
 		
 		
 		List<String> realignerTargetCreatorCommand = Util.getRealignerTargetCreatorCommand( inputFiles.get(0),  workingDir + File.separator+ intervalsFile);
