@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import com.workflow.application.WorkerTask;
 import com.workflow.application.helper.InputHelper;
@@ -24,11 +25,13 @@ public class MapTask implements Task{
     	List<String> command = Util.getBWACommand(helper.getTasktuple().getTaskid()+"_"+System.getProperty("Name"));
     	
     	List<String> outfiles=new ArrayList<String>();
+    	List<String> inputFiles = new ArrayList<>();//helper.getInputFiles().parallelStream().map(input->input.getName()).collect(Collectors.toList());
     	for(String location: helper.getInputsHash().keySet()){
     		List<String> files = helper.getInputsHash().get(location);
     		for(String inputFile:files){
     			System.out.println("InputFile: "+inputFile);
-    			command.add(workingdir+File.separator+inputFile);
+    			inputFiles.add(inputFile);
+    			command.add(/*workingdir+File.separator+*/inputFile);
     		}
     	}
     	
@@ -36,16 +39,27 @@ public class MapTask implements Task{
 //		String outputFile = random + "_"+System.getProperty("Name");
     	String outputFile = helper.getOutputFiles().get(0).getName();
  
-		command.addAll(Util.getPipeSortCommand());
-    	command.add(workingdir + File.separator + outputFile.replaceAll(".bam", ""));
+		command.addAll(Util.getPipeSortCommand(outputFile));
+//    	command.add(/*workingdir + File.separator + */outputFile.replaceAll(".bam", ""));
     	
     	outfiles.add(outputFile/*+".bam"*/);	//To keep the naming consistent as samtools appends its own bam extension. 
     	
-    	if(Util.writeShAndStartProcess(command,workingdir,random,"_bwa.sh") && Util.getFileSize(workingdir+File.separator+outputFile/*+".bam"*/)>100){
-    		List<FileProperties> resultFiles=task.uploadResults(outfiles, workingdir, helper.getOutputFiles().get(0));
-    		return new Object[]{"OK",resultFiles};
+    	
+        
+        
+        List<String> outputFiles = new ArrayList<>();
+        outputFiles.add(outputFile);
+    	
+//        String dependencyScript = Util.stashModule+Util.getBwaDependencyScript()+Util.getSamtoolsDependencyScript();
+        String dependencyScript = Util.getDependencyScript();
+        
+    	task.execute(Util.convertListCommandToString(command), inputFiles, outputFiles, outputFile.split(".bam")[0], dependencyScript);
+    	
+    	List<FileProperties> resultFiles=task.uploadResults(outfiles, workingdir, helper.getOutputFiles().get(0));
+    	return new Object[]{"OK",resultFiles};
+    	/*if(Util.writeShAndStartProcess(command,workingdir,random,"_bwa.sh") && Util.getFileSize(workingdir+File.separator+outputFile+".bam")>100){
     	}
-    	return new Object[]{"ERROR: Fail",null};
+    	return new Object[]{"ERROR: Fail",null};*/
 	
 	}
 }

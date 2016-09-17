@@ -37,11 +37,11 @@ public class BaseRecalibratorTask implements Task {
 //					inputFiles.add(Util.getStagingLocation(stagingLocation,workingDir, inputFile));
 //					inputBams.append(" -I "+Util.getStagingLocation(stagingLocation,workingDir, inputFile)+" ");
 					inputFiles.add("-I");
-					String input = Util.getStagingLocation(stagingLocation,workingDir, inputFile);
-					inputFiles.add(input);
-					if(!Util.ifIndexExistsForBAM(input)){
-						Util.indexBAM(input);
-					}
+//					String input = Util.getStagingLocation(stagingLocation,workingDir, inputFile);
+					inputFiles.add(inputFile);
+					/*if(!Util.ifIndexExistsForBAM(inputFile)){
+						Util.indexBAM(inputFile);
+					}*/
 					//For now delete after adding split bams:
 //					outputFiles.add(new File(inputFile).getName());
 //					inputFileProperties = helper.getInputFiles().get(0);	//Will have to change this
@@ -57,9 +57,12 @@ public class BaseRecalibratorTask implements Task {
 			return new Object[]{"OK",resultFiles};*/
 		
 //		List<String> baseRecalibratorCommand = Util.getBaseRecalibratorCommand( inputFiles.get(0), workingDir + File.separator + outputFile);
-		List<String> baseRecalibratorCommand = Util.getBaseRecalibratorCommand( inputFiles, workingDir + File.separator + outputFile);
-		Util.runProcessWithListOfCommands(baseRecalibratorCommand);
+		List<String> baseRecalibratorCommand = Util.getBaseRecalibratorCommand( inputFiles, /*workingDir + File.separator + */outputFile);
+		
+		
+//		Util.runProcessWithListOfCommands(baseRecalibratorCommand);
 		inputFiles.removeAll(Collections.singleton("-I"));
+		task.execute(Util.convertListCommandToString(baseRecalibratorCommand), inputFiles, Arrays.asList(outputFile), outputFile.split("_calibration.csv")[0], Util.getDependencyScript());
 		/*List<String> contigsListCommand = Util.getContigsListCommand(inputFiles.get(0));
 		contigsListCommand.add(workingDir + File.separator + outputContigsFile);
 		

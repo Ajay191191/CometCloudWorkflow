@@ -28,11 +28,11 @@ public class HaplotypeCallerTask implements Task {
 			List<String> files = helper.getInputsHash().get(location);
 			for(String inputFile:files){
 				if(inputFile.endsWith(".bam")) {
-					String input = Util.getStagingLocation(stagingLocation, workingDir, inputFile);
-					inputFiles.add(input);
-					if(!Util.ifIndexExistsForBAM(input)){
-						Util.indexBAM(input);
-					}
+//					String input = Util.getStagingLocation(stagingLocation, workingDir, inputFile);
+					inputFiles.add(inputFile);
+					/*if(!Util.ifIndexExistsForBAM(inputFile)){
+						Util.indexBAM(inputFile);
+					}*/
 				}
 			}
 		}
@@ -43,9 +43,13 @@ public class HaplotypeCallerTask implements Task {
 		
 		Object calibratedCSV = helper.getNthObjectFromList(3);
 		if(calibratedCSV instanceof FileProperties){
-			List<String> haplotypeCallerCommand = Util.getHaplotypeCallerCommand( inputFiles.get(0), workingDir + File.separator +outputvcf,Util.getContigForFile(inputFiles.get(0)),Util.getStagingLocation(stagingLocation, workingDir, ((FileProperties)calibratedCSV).getName()));
-			Util.runProcessWithListOfCommands(haplotypeCallerCommand);
+			List<String> haplotypeCallerCommand = Util.getHaplotypeCallerCommand( inputFiles.get(0), /*workingDir + File.separator +*/outputvcf,Util.getContigForFile(workingDir + File.separator +inputFiles.get(0)),/*Util.getStagingLocation(stagingLocation, workingDir, ((FileProperties)calibratedCSV).getName())*/((FileProperties)calibratedCSV).getName());
+			
 			outputFiles.add(outputvcf);
+			System.out.println("Command "+workingDir+" " +  Util.convertListCommandToString(haplotypeCallerCommand));
+			task.execute(Util.convertListCommandToString(haplotypeCallerCommand), inputFiles, outputFiles, outputvcf, Util.getDependencyScript());
+			
+//			Util.runProcessWithListOfCommands(haplotypeCallerCommand);
 			
 			resultFiles=task.uploadResults(outputFiles,workingDir, helper.getOutputFiles().get(0));
 			Logger.getLogger(HaplotypeCallerTask.class.getName()).log(Level.INFO,"End Haplotype : " + System.currentTimeMillis());

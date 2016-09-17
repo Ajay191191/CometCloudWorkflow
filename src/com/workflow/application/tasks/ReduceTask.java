@@ -36,10 +36,10 @@ public class ReduceTask implements Task{
 			//INPUT=$SORTEDBAMFILENAME OUTPUT=$MARKDUPLICATESBAM REMOVE_DUPLICATES=false METRICS_FILE=metrics.txt
 			new MarkDuplicates().instanceMain(parameters.toArray(new String[0]));
 			indexCommand.add(workingDir+File.separator+outputFile);
-			Util.runProcessWithListOfCommands(indexCommand);
+			task.execute(Util.convertListCommandToString(indexCommand));
+//			Util.runProcessWithListOfCommands(indexCommand);
 			outfiles.add(outputFile);
 //			outfiles.add(outputFile+".bai");
-			
 		}
 		
 		List<FileProperties> resultFiles=task.uploadResults(outfiles,workingDir, helper.getOutputFiles().get(0));

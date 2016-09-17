@@ -1,6 +1,7 @@
 package com.workflow.application.tasks;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,11 +25,11 @@ public class RealignerTargetCreatorTask implements Task {
 			List<String> files = helper.getInputsHash().get(location);
 			for(String inputFile:files){
 				if(!inputFile.endsWith(".bai")){
-					String input = Util.getStagingLocation(stagingLocation, workingDir, inputFile);
-					inputFiles.add(input);
-					if(!Util.ifIndexExistsForBAM(input)){
-						Util.indexBAM(input);
-					}
+//					String input = Util.getStagingLocation(stagingLocation, workingDir, inputFile);
+					inputFiles.add(inputFile);
+					/*if(!Util.ifIndexExistsForBAM(inputFile)){
+						Util.indexBAM(inputFile);
+					}*/
 				}
 			}
 		}
@@ -46,13 +47,38 @@ public class RealignerTargetCreatorTask implements Task {
 		String outputBam = helper.getOutputFiles().get(0).getName();
 		
 		
-		List<String> realignerTargetCreatorCommand = Util.getRealignerTargetCreatorCommand( inputFiles.get(0),  workingDir + File.separator+ intervalsFile);
+		List<String> realignerTargetCreatorCommand = Util.getRealignerTargetCreatorCommand( inputFiles.get(0),  /*workingDir + File.separator+ */intervalsFile);
 //		CommandLineGATK.main(realignerTargetCreatorCommand.toArray(new String[0]));
-		Util.runProcessWithListOfCommands(realignerTargetCreatorCommand);
+//		Util.runProcessWithListOfCommands(realignerTargetCreatorCommand);
 		
-		List<String> indelRealignerCommand = Util.getIndelRealignerCommand(inputFiles.get(0), Util.getStagingLocation(stagingLocation, workingDir, intervalsFile), workingDir + File.separator + outputBam);
+		outputFiles.add(intervalsFile);
+		
+		task.execute(Util.convertListCommandToString(realignerTargetCreatorCommand), inputFiles, outputFiles, outputBam+"Realign", Util.getDependencyScript());
+		
+		/*try {
+			File f = new File(workingDir,intervalsFile);
+			f.createNewFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		
+		List<String> indelRealignerCommand = Util.getIndelRealignerCommand(inputFiles.get(0), /*Util.getStagingLocation(stagingLocation, workingDir, intervalsFile)*/intervalsFile, /*workingDir + File.separator +*/ outputBam);
 //		CommandLineGATK.main(indelRealignerCommand.toArray(new String[0]));
-		Util.runProcessWithListOfCommands(indelRealignerCommand);
+		
+		outputFiles.clear();
+		outputFiles.add(outputBam);
+		inputFiles.add(intervalsFile);
+		task.execute(Util.convertListCommandToString(indelRealignerCommand), inputFiles, outputFiles, outputBam, Util.getDependencyScript());
+//		Util.runProcessWithListOfCommands(indelRealignerCommand);
+		
+		/*try {
+			File f = new File(workingDir,outputBam);
+			f.createNewFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 		
 		outputFiles.add(outputBam);
 //		outputFiles.add(outputBam.replaceAll(".bam", ".bai"));

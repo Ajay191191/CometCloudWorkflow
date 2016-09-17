@@ -267,3 +267,22 @@ public class ExternalScheduler implements Runnable{
 		}
 	}
 }
+
+class ExternalResourceMonitor implements Runnable{
+
+	@Override
+	public void run() {
+		while(true){
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			//TODO: Inform AS to start/stop resource and to schedule data movement.
+			
+		}
+		
+	}
+	
+}

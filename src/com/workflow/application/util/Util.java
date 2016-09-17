@@ -24,6 +24,7 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.lang.StringUtils;
 
 import com.google.common.collect.Lists;
 import com.workflow.application.WorkerTask;
@@ -37,6 +38,7 @@ import htsjdk.samtools.SAMRecordIterator;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
 import tassl.application.cometcloud.FileProperties;
+import tassl.application.utils.CommonUtils;
 
 /**
  * @author ajay
@@ -58,11 +60,17 @@ public class Util {
 		GATKJar = "/util/academic/gatk/gatk-protected/target/GenomeAnalysisTK.jar";
 		ReferenceFile = "/projects/academic/jzola/ajaysudh/data/Reference/hg19.fasta";
 		DBSNPFile = "/projects/academic/jzola/ajaysudh/data/dbsnp/dbsnp_137.hg19.vcf";*/
-		BWAExecutable = System.getenv("bwaExecutable")!=null?System.getenv("bwaExecutable"):"/util/academic/bwa/bwa-0.7.12/bwa";
-		SAMTOOLSExecutable = System.getenv("samtoolsExecutable")!=null?System.getenv("samtoolsExecutable"):"/util/academic/samtools/samtools-1.1/samtools";
-		GATKJar = System.getenv("gatkJar")!=null?System.getenv("gatkJar"):"/util/academic/gatk/gatk-protected/target/GenomeAnalysisTK.jar";
-		ReferenceFile = System.getenv("referenceFastqFile")!=null?System.getenv("referenceFastqFile"):"/projects/academic/jzola/ajaysudh/data/Reference/hg19.fasta";
-		DBSNPFile = System.getenv("dbsnpFile")!=null?System.getenv("dbsnpFile"):"/projects/academic/jzola/ajaysudh/data/dbsnp/dbsnp_137.hg19.vcf";
+		/*BWAExecutable = System.getenv("bwaExecutable")!=null?System.getenv("bwaExecutable"):"bwa";
+		SAMTOOLSExecutable = System.getenv("samtoolsExecutable")!=null?System.getenv("samtoolsExecutable"):"samtools";
+		GATKJar = System.getenv("gatkJar")!=null?System.getenv("gatkJar"):"GenomeAnalysisTK.jar";
+		ReferenceFile = System.getenv("referenceFastqFile")!=null?System.getenv("referenceFastqFile"):"hg19.fasta";
+		DBSNPFile = System.getenv("dbsnpFile")!=null?System.getenv("dbsnpFile"):"dbsnp_137.hg19.vcf";*/
+		
+		BWAExecutable = "$bwaExecutable";
+		SAMTOOLSExecutable = "$samtoolsExecutable";
+		GATKJar = "$gatkJar";
+		ReferenceFile="$referenceFastqFile";
+		DBSNPFile="$dbsnpFile";
 		HelperConstants.numberOfThreads = Runtime.getRuntime().availableProcessors();
 	}
 	
@@ -89,8 +97,9 @@ public class Util {
     	command.add(ReferenceFile);
     	return command;
 	}
-	
-	public static List<String> getPipeSortCommand(){
+//	$samtoolsExecutable sort -@ 16 - -T asd.tmp -o outputfile.448552811.S1.SRR017279.0.bam
+
+	public static List<String> getPipeSortCommand(String outputFile){
 		List<String> command = new ArrayList<String>();
 		command.add("|");
 		command.add(SAMTOOLSExecutable);
@@ -98,6 +107,10 @@ public class Util {
 		command.add("-@");
 		command.add(HelperConstants.numberOfThreads+"");
 		command.add("-");
+		command.add("-T");
+		command.add("sorted.tmp");
+		command.add("-o");
+		command.add(outputFile);
 		return command;
 	}
 	
@@ -179,6 +192,9 @@ public class Util {
 		//java -jar $GATKJARDIR/GenomeAnalysisTK.jar -T RealignerTargetCreator -nt $NUMDATATHREADS -R 
 		//$REFERENCEDIR -I $REORDERBAM -o $OUTPUTINTERVALS --defaultBaseQualities 1
 
+		command.addAll(Util.getIndexCommand());
+		command.add(inputBam);
+		command.add(";");
 		command.add("java");
 		command.add("-jar");
 		command.add(GATKJar);
@@ -205,6 +221,9 @@ public class Util {
 		//java -Djava.io.tmpdir=$TEMPDIR -jar $GATKJARDIR/GenomeAnalysisTK.jar -T IndelRealigner -R $REFERENCEDIR -I $REORDERBAM 
 		//-targetIntervals $OUTPUTINTERVALS -o $REALIGNEDBAM -LOD 5 --defaultBaseQualities 1
 
+		command.addAll(Util.getIndexCommand());
+		command.add(inputBam);
+		command.add(";");
 		command.add("java");
 		command.add("-jar");
 		command.add(GATKJar);
@@ -240,6 +259,12 @@ public class Util {
 		//java -jar $GATKJARDIR/GenomeAnalysisTK.jar -T BaseRecalibrator -nct $NUMCPUTHREADS -R $REFERENCEDIR 
 		//-I $REALIGNEDBAM -o $BASECALIBRATEDCSV -cov ReadGroupCovariate -cov QualityScoreCovariate -cov CycleCovariate -cov 
 		//ContextCovariate -knownSites $DBSNFP135VCF
+		
+		for(String input:inputBam){
+			command.addAll(Util.getIndexCommand());
+			command.add(input.replaceAll("-I", ""));
+			command.add(";");
+		}
 		
 		command.add("java");
 		command.add("-jar");
@@ -324,7 +349,10 @@ public class Util {
 		//-A AlleleBalance -A Coverage -A HomopolymerRun -A FisherStrand -A HaplotypeScore -A HardyWeinberg -A ReadPosRankSumTest 
 		//-A QualByDepth -A MappingQualityRankSumTest -A VariantType -A MappingQualityZero -minPruning 10 -stand_call_conf 30.0 -stand_emit_conf 10.0
 		List<String> command = new ArrayList<String>();
-
+		command.addAll(Util.getIndexCommand());
+		command.add(inputBam);
+		command.add(";");
+		
 		command.add("java");
 		command.add("-jar");
 		command.add(GATKJar);
@@ -367,8 +395,10 @@ public class Util {
 		command.add("30.0");
 		command.add("-stand_emit_conf");
 		command.add("10.0");
-		command.add("-L");
-		command.add(contig);
+		if(!contig.isEmpty()){
+			command.add("-L");
+			command.add(contig);
+		}
 		command.add("-BQSR");
 		command.add(bqsrFile);
 		
@@ -420,10 +450,11 @@ public class Util {
 
 	
 	public static void runProcessWithListOfCommands(List<String> command){
-		ProcessBuilder pb = new ProcessBuilder(command);
+		/*ProcessBuilder pb = new ProcessBuilder(command);
 		Logger.getLogger(Util.class.getName()).log(Level.INFO,"command: " + command);
 
-		runProcess(pb);
+		runProcess(pb);*/
+		CommonUtils.execute(StringUtils.join(command.toArray()," "));
 	}
 
 	private static void runProcess(ProcessBuilder pb) {
@@ -545,7 +576,7 @@ public class Util {
 	}
 	
 	public static String getContigForFile(String bamFile){
-		String contig = "chr22";
+		String contig = "";
 		
 		SamReader reader = SamReaderFactory.makeDefault().open(new File(bamFile));
 		
@@ -581,6 +612,48 @@ public class Util {
 			return true;
 		return false;
 		
+	}
+	
+	public static String convertListCommandToString(List<String> command){
+		if(command!=null || !command.isEmpty()){
+			return StringUtils.join(command.toArray(), " ");
+		}
+		return null;
+	}
+	
+	/*BWAExecutable = "$bwaExecutable";
+	SAMTOOLSExecutable = "$samtoolsExecutable";
+	GATKJar = "$gatkJar";
+	ReferenceFile="$referenceFastqFile";
+	DBSNPFile="$dbsnpFile";*/
+	
+	public static String stashModule="module load stashcp\n";
+	
+	public static String getBwaDependencyScript(){
+		String script="\nstashcp -r /user/ajay191191/bwa-0.7.15 .\nexport bwaExecutable=bwa-0.7.15/bwa\nchmod -R 777 bwa-0.7.15";
+		return script;
+	}
+	
+	public static String getSamtoolsDependencyScript(){
+		return "\nstashcp -r /user/ajay191191/samtools-1.3.1 .\nexport samtoolsExecutable=samtools-1.3.1/samtools\nchmod -R 777 samtools-1.3.1/";
+	}
+	
+	public static String getGatkDependencySript(){
+		return "\nstashcp - r /user/ajay191191/GenomeAnalysisTK.jar .\nexport gatkJar=GenomeAnalysisTK.jar\nchmod -R 777 GenomeAnalysisTK.jar";
+	}
+	
+	public static String getReferenceFileDependencyScript(){
+		return "\nstashcp -r /user/ajay191191/Reference .\nexport referenceFastqFile=Reference/hg19.fasta\nchmod -R 777 Reference/";
+	}
+	
+	public static String getDbsnpDependencyScript(){
+		return "\nstashcp -r /user/ajay191191/dbsnp .\nexport dbsnpFile=dbsnp/dbsnp_137.hg19.vcf\nchmod -R 777 dbsnp/";
+	}
+	
+	
+	public static String getDependencyScript(){
+		return stashModule+"\nstashcp /user/ajay191191/DependentFiles.tar .\ntar xf DependentFiles.tar\nrm DependentFiles.tar\nchmod -R 777 Dependencies/\nbwaExecutable=Dependencies/bwa-0.7.15/bwa\nsamtoolsExecutable=Dependencies/samtools-1.3.1/samtools\n"
+				+ "\ngatkJar=Dependencies/GenomeAnalysisTK.jar\nreferenceFastqFile=Dependencies/Reference/chr1.fa";
 	}
 	
 }
