@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xflow name="Workflow">
+<stages>
+  <stage id="S1" type="AppGenerateClass" value="com.workflow.application.GeneratorTask" method="map"/>
+  <stage id="S1" type="PropertyFile" value="./sample.properties"/>
+  <stage id="S1" type="Application" value="Workflow"/>
+  <stage id="S1" type="InputData">
+        <InputData value="ajaysudh@rush.ccr.buffalo.edu:/gpfs/scratch/ajaysudh/inputs/" zone="zoneA" site="clusterTest" constraint=""/>
+  </stage>
+  <stage id="S1" type="Results" value=" " zone="zoneA" site="clusterTest" constraint="zoneA,siteIndia,siteSierra,zoneB,clusterTest"/>
+
+  <stage id="S2" type="AppGenerateClass" value="com.workflow.application.GeneratorTask" method="reduce"/>
+  <stage id="S2" type="PropertyFile" value="./sample.properties"/>
+  <stage id="S2" type="Application" value="Workflow"/>
+  <stage id="S2" type="InputData">
+	<InputData value="ajaysudh@rush.ccr.buffalo.edu:/gpfs/scratch/ajaysudh/inputs/" zone="zoneA" site="clusterTest"  constraint=""/>    
+  </stage>
+  <stage id="S2" type="Results" value="ajaysudh@rush.ccr.buffalo.edu:/gpfs/scratch/ajaysudh/output/" zone="zoneA" site="clusterTest" constraint=""/>
+
+</stages>
+<objectives>
+     <objective id="S1" type="MinRunningTime" value="1377" />
+     <objective id="S2" type="MinRunningTime" value="1377" />
+</objectives>
+<transitions>
+<!-- Keeping it true for now as the binary tree reduction does not work and it creates a task for each of the tasks created in this and thus for the next task even though blocking is true, n tasks are created. -->
+        <transition from="S1" to="S2" blocking="true"/> 
+</transitions>
+<scheduler value="ip:port"/>
+</xflow>
