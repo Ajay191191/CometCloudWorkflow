@@ -17,8 +17,11 @@ public class MapTask implements Task{
 	@Override
 	public Object[] performTask(InputHelper helper,WorkerTask task) {
 
-		Logger.getLogger(WorkerTask.class.getName()).log(Level.INFO,"Vars: "  + System.getProperty("bwaExecutable") + System.getProperty("samtoolsExecutable") + System.getProperty("gatkJar") + System.getProperty("referenceFastqFile") + System.getProperty("dbsnpFile"));
-
+//		Logger.getLogger(WorkerTask.class.getName()).log(Level.INFO,"Vars: "  + System.getProperty("bwaExecutable") + System.getProperty("samtoolsExecutable") + System.getProperty("gatkJar") + System.getProperty("referenceFastqFile") + System.getProperty("dbsnpFile"));
+		
+		Logger.getLogger(WorkerTask.class.getName()).log(Level.INFO,"Starting BWA");
+		long time1 = System.currentTimeMillis();
+		long fileSize=0;
 		Logger.getLogger(MapTask.class.getName()).log(Level.INFO,"Start BWA : " + System.currentTimeMillis());
 		String workingdir = System.getProperty("WorkingDir");
     	List<String> command = Util.getBWACommand(helper.getTasktuple().getTaskid()+"_"+System.getProperty("Name"));
@@ -28,6 +31,7 @@ public class MapTask implements Task{
     		List<String> files = helper.getInputsHash().get(location);
     		for(String inputFile:files){
     			System.out.println("InputFile: "+inputFile);
+    			fileSize = new File(workingdir+File.separator+inputFile).length();
     			command.add(workingdir+File.separator+inputFile);
     		}
     	}
@@ -43,8 +47,10 @@ public class MapTask implements Task{
     	
     	if(Util.writeShAndStartProcess(command,workingdir,random,"_bwa.sh") && Util.getFileSize(workingdir+File.separator+outputFile/*+".bam"*/)>100){
     		List<FileProperties> resultFiles=task.uploadResults(outfiles, workingdir, helper.getOutputFiles().get(0));
+    		Logger.getLogger(WorkerTask.class.getName()).log(Level.INFO,"Time for BWA"+(System.currentTimeMillis() - time1) + " Input file size" + fileSize);
     		return new Object[]{"OK",resultFiles};
     	}
+    	Logger.getLogger(WorkerTask.class.getName()).log(Level.INFO,"Time for BWA"+(System.currentTimeMillis() - time1) + " Input file size " + fileSize );
     	return new Object[]{"ERROR: Fail",null};
 	
 	}

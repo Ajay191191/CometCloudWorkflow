@@ -24,12 +24,16 @@ public class HaplotypeCallerTask implements Task {
 		String outputvcf = helper.getOutputFiles().get(0).getName();
 		String stagingLocation = helper.getInputLocation();
 		
+		Long time1 = System.currentTimeMillis();
+		long fileSize = 0;
+		
 		for(String location: helper.getInputsHash().keySet()){
 			List<String> files = helper.getInputsHash().get(location);
 			for(String inputFile:files){
 				if(inputFile.endsWith(".bam")) {
 					String input = Util.getStagingLocation(stagingLocation, workingDir, inputFile);
 					inputFiles.add(input);
+					fileSize+=new File(input).length();
 					if(!Util.ifIndexExistsForBAM(input)){
 						Util.indexBAM(input);
 					}
@@ -50,6 +54,9 @@ public class HaplotypeCallerTask implements Task {
 			resultFiles=task.uploadResults(outputFiles,workingDir, helper.getOutputFiles().get(0));
 			Logger.getLogger(HaplotypeCallerTask.class.getName()).log(Level.INFO,"End Haplotype : " + System.currentTimeMillis());
 		}
+		
+		Logger.getLogger(WorkerTask.class.getName()).log(Level.INFO,"Time for Haplotype"+(System.currentTimeMillis() - time1) + " Input file size " + fileSize );
+		
 		return new Object[]{"OK",resultFiles};
 		
 		

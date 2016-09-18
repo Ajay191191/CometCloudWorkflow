@@ -17,8 +17,12 @@ import tassl.application.cometcloud.GenerateTasksObject;
 
 public class GeneratorTask extends GenerateTasksAbstract {
 
+	
+	
 	@Override
-	public GenerateTasksObject createTasks(String workflowId,String stageId, List<FileProperties> input, FileProperties output,String propertyFileValues, List dependencies, String method){
+	public GenerateTasksObject createTasks(String stageId, List<FileProperties> input, FileProperties output,String propertyFileValues, List dependencies, String method){
+		
+		String workflowId = Math.random()*10000+"";
 	    GenerateTasksObject taskObj=null;
 	    this.loadProperties(propertyFileValues);
 	    Logger.getLogger(GeneratorTask.class.getName()).log(Level.INFO,"method " + method);

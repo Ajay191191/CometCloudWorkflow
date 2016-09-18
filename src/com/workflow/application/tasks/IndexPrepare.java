@@ -17,6 +17,10 @@ public class IndexPrepare implements Task {
 
 	@Override
 	public Object[] performTask(InputHelper helper, WorkerTask task) {
+		
+		long time1=System.currentTimeMillis();
+		long fileSize =0;
+		
 		String workingDir = System.getProperty("WorkingDir");
 	    Logger.getLogger(IndexPrepare.class.getName()).log(Level.INFO,"In Index Prepare");
 
@@ -34,6 +38,7 @@ public class IndexPrepare implements Task {
 				if(!inputFile.endsWith(".bai")){
 					String input = Util.getStagingLocation(stagingLocation, workingDir, inputFile);
 					inputFiles.add(input);
+					fileSize+=new File(input).length();
 					if(!Util.ifIndexExistsForBAM(input)){
 						Util.indexBAM(input);
 					}
@@ -70,6 +75,7 @@ public class IndexPrepare implements Task {
 //		task.uploadResults(baiFiles, workingDir, helper.getOutputFile());
 		
 		resultFiles=task.uploadResults(outfiles, workingDir, helper.getOutputFiles().get(0));
+		Logger.getLogger(WorkerTask.class.getName()).log(Level.INFO,"Time for IndexPrepare"+(System.currentTimeMillis() - time1) + " Input file size " + fileSize );
     	return new Object[]{"OK",resultFiles};
 	}
 	

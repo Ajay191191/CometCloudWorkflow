@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.workflow.application.WorkerTask;
 import com.workflow.application.helper.InputHelper;
@@ -17,6 +19,8 @@ public class BaseRecalibratorTask implements Task {
 	@Override
 	public Object[] performTask(InputHelper helper, WorkerTask task) {
 
+		long time1 = System.currentTimeMillis();
+		long fileSize =0;
 		
 		String workingDir = System.getProperty("WorkingDir");
 		List<String> inputFiles=new ArrayList();
@@ -39,6 +43,7 @@ public class BaseRecalibratorTask implements Task {
 					inputFiles.add("-I");
 					String input = Util.getStagingLocation(stagingLocation,workingDir, inputFile);
 					inputFiles.add(input);
+					fileSize+=new File(input).length();
 					if(!Util.ifIndexExistsForBAM(input)){
 						Util.indexBAM(input);
 					}
@@ -96,6 +101,7 @@ public class BaseRecalibratorTask implements Task {
 		*/
 		
 //		resultFiles.add(inputFileProperties);
+		Logger.getLogger(WorkerTask.class.getName()).log(Level.INFO,"Time for BaseRecalibrator"+(System.currentTimeMillis() - time1) + " Input file size " + fileSize );
 		return new Object[]{"OK",resultFiles};
 	}
 
